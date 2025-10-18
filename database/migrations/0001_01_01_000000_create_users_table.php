@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
             $table->string('full_name', 100)->nullable();
@@ -36,7 +36,8 @@ return new class extends Migration
             $table->string('last_access_ip', 45)->nullable();
             $table->timestamp('last_access')->nullable();
             $table->timestamp('last_connection')->nullable();
-            $table->timestamps();
+            $table->timestampTz('created_at')->default(DB::raw('now()'));
+            $table->timestampTz('updated_at')->default(DB::raw('now()'));
         });
 
         DB::statement("ALTER TABLE users ADD CONSTRAINT users_gender_check CHECK (gender IN ('male','female','other'))");
