@@ -2,54 +2,50 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GradeRecord extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'user_id',
         'evaluation_id',
-        'group_id',
-        'configuration_id',
+        'user_id',
         'obtained_grade',
-        'grade_weight',
-        'grade_type',
-        'status',
+        'feedback',
         'record_date',
     ];
 
     protected $casts = [
         'obtained_grade' => 'decimal:2',
-        'grade_weight' => 'decimal:2',
-        'grade_type' => 'string',
-        'status' => 'string',
         'record_date' => 'datetime',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function evaluation(): BelongsTo
+    // Relaciones
+    public function evaluation()
     {
         return $this->belongsTo(Evaluation::class);
     }
 
-    public function group(): BelongsTo
+    public function student()
     {
-        return $this->belongsTo(Group::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function configuration(): BelongsTo
+    // Scopes
+    public function scopeByStudent($query, $userId)
     {
-        return $this->belongsTo(GradeConfiguration::class, 'configuration_id');
+        return $query->where('user_id', $userId);
     }
 
-    public function gradeChanges(): HasMany
+    public function scopePassed($query, $passingGrade = 60)
     {
-        return $this->hasMany(GradeChange::class, 'record_id');
+        return $query->where('obtained_grade', '>=', $passingGrade);
+    }
+
+    public function scopeFailed($query, $passingGrade = 60)
+    {
+        return $query->where('obtained_grade', '<', $passingGrade);
     }
 }

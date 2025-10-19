@@ -2,49 +2,58 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Evaluation extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'group_id',
         'title',
+        'description',
+        'external_url',
         'evaluation_type',
-        'start_date',
-        'end_date',
-        'duration_minutes',
-        'total_score',
-        'status',
+        'due_date',
+        'weight',
         'teacher_creator_id',
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'end_date' => 'datetime',
-        'duration_minutes' => 'integer',
-        'total_score' => 'decimal:2',
-        'status' => 'string',
+        'due_date' => 'datetime',
+        'weight' => 'decimal:2',
     ];
 
-    public function group(): BelongsTo
+    // Relaciones
+    public function group()
     {
         return $this->belongsTo(Group::class);
     }
 
-    public function teacherCreator(): BelongsTo
+    public function teacherCreator()
     {
         return $this->belongsTo(User::class, 'teacher_creator_id');
     }
 
-    public function questions(): HasMany
+    public function gradeRecords()
     {
-        return $this->hasMany(Question::class);
+        return $this->hasMany(GradeRecord::class);
     }
 
-    public function attempts(): HasMany
+    // Scopes
+    public function scopeByType($query, $type)
     {
-        return $this->hasMany(Attempt::class);
+        return $query->where('evaluation_type', $type);
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('due_date', '>=', now());
+    }
+
+    public function scopePast($query)
+    {
+        return $query->where('due_date', '<', now());
     }
 }
