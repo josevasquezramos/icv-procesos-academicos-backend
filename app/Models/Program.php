@@ -32,23 +32,21 @@ class Program extends Model
         'status' => 'string',
     ];
 
-    public function programCourses(): HasMany
+    // Relaciones
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class, 'program_courses')
+            ->withPivot('mandatory')
+            ->withTimestamps();
+    }
+
+    public function programCourses()
     {
         return $this->hasMany(ProgramCourse::class);
     }
 
-    public function certificates(): HasMany
+    public function credentials()
     {
-        return $this->hasMany(Certificate::class);
-    }
-
-    public function diplomas(): HasMany
-    {
-        return $this->hasMany(Diploma::class);
-    }
-
-    public function graduates(): HasMany
-    {
-        return $this->hasMany(Graduate::class);
+        return $this->hasMany(Credential::class);
     }
 }

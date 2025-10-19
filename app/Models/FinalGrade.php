@@ -2,42 +2,50 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FinalGrade extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'group_id',
-        'configuration_id',
         'final_grade',
-        'partial_average',
         'program_status',
-        'certification_obtained',
         'calculation_date',
     ];
 
     protected $casts = [
         'final_grade' => 'decimal:2',
-        'partial_average' => 'decimal:2',
-        'program_status' => 'string',
-        'certification_obtained' => 'boolean',
         'calculation_date' => 'datetime',
     ];
 
-    public function user(): BelongsTo
+    // Relaciones
+    public function student()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function group(): BelongsTo
+    public function group()
     {
         return $this->belongsTo(Group::class);
     }
 
-    public function configuration(): BelongsTo
+    // Scopes
+    public function scopePassed($query)
     {
-        return $this->belongsTo(GradeConfiguration::class, 'configuration_id');
+        return $query->where('program_status', 'Passed');
+    }
+
+    public function scopeFailed($query)
+    {
+        return $query->where('program_status', 'Failed');
+    }
+
+    public function scopeInProgress($query)
+    {
+        return $query->where('program_status', 'In_progress');
     }
 }
