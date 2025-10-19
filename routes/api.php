@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CompleteGroupController;
+use App\Http\Controllers\Api\CredentialPdfController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Api\AuthController;
@@ -24,5 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('courses', CourseController::class)->except('create', 'edit');
     Route::resource('groups', GroupController::class)->except('create', 'edit');
 
-    Route::post('groups/{group}/complete', CompleteGroupController::class);
+    Route::post('groups/{group}/complete', CompleteGroupController::class)->name('groups.complete');
+    Route::get('credentials/{credential}/pdf', CredentialPdfController::class)->name('credentials.pdf');
 });
