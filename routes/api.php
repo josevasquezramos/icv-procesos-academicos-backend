@@ -19,5 +19,5 @@ Route::middleware('auth:sanctum')->group(function () {
         ], 200);
     });
 
-    Route::resource('courses', CourseController::class);
+    Route::resource('courses', CourseController::class)->except('create', 'edit');
 });

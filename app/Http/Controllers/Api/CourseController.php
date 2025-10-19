@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCourseRequest;
 use App\Models\Course;
+use App\Models\CoursePreviousRequirement;
+use App\Models\ProgramCourse;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class CourseController extends Controller
 {
@@ -19,49 +23,49 @@ class CourseController extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreCourseRequest $request)
     {
-        //
+        try {
+            $validated = $request->validated();
+
+            $course = Course::create($validated);
+
+            if ($request->has('previous_requirements') && !empty($request->previous_requirements)) {
+                $previousCourseIds = explode(',', $request->previous_requirements);
+
+                foreach ($previousCourseIds as $previousCourseId) {
+                    $previousCourseId = trim($previousCourseId);
+
+                    CoursePreviousRequirement::create([
+                        'course_id' => $course->id,
+                        'previous_course_id' => $previousCourseId,
+                    ]);
+                }
+            }
+
+            return response()->json([
+                'message' => 'Course created successfully!',
+                'course' => $course,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error creating course.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         //
