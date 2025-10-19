@@ -30,16 +30,18 @@ class CourseController extends Controller
 
             $course = Course::create($validated);
 
-            if ($request->has('previous_requirements') && !empty($request->previous_requirements)) {
-                $previousCourseIds = explode(',', $request->previous_requirements);
+            if ($request->has('prerequisites') && !empty($request->prerequisites)) {
+                $previousCourseIds = explode(',', $request->prerequisites);
 
                 foreach ($previousCourseIds as $previousCourseId) {
                     $previousCourseId = trim($previousCourseId);
 
-                    CoursePreviousRequirement::create([
-                        'course_id' => $course->id,
-                        'previous_course_id' => $previousCourseId,
-                    ]);
+                    if (is_numeric($previousCourseId)) {
+                        CoursePreviousRequirement::create([
+                            'course_id' => $course->id,
+                            'previous_course_id' => (int)$previousCourseId,
+                        ]);
+                    }
                 }
             }
 
