@@ -2,39 +2,54 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GroupParticipant extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'group_id',
         'user_id',
         'role',
-        'teacher_function',
         'enrollment_status',
         'assignment_date',
-        'schedule',
     ];
 
     protected $casts = [
         'assignment_date' => 'datetime',
-        'schedule' => 'array',
     ];
 
-    public function group(): BelongsTo
+    // Relaciones
+    public function group()
     {
         return $this->belongsTo(Group::class);
     }
 
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function attendances(): HasMany
+    public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    // Scopes
+    public function scopeStudents($query)
+    {
+        return $query->where('role', 'student');
+    }
+
+    public function scopeTeachers($query)
+    {
+        return $query->where('role', 'teacher');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('enrollment_status', 'active');
     }
 }

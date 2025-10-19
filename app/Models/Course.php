@@ -40,24 +40,39 @@ class Course extends Model
         'status' => 'boolean',
         'level' => 'string',
     ];
+    
+// Relaciones
+    public function programs()
+    {
+        return $this->belongsToMany(Program::class, 'program_courses')
+            ->withPivot('mandatory')
+            ->withTimestamps();
+    }
 
-    public function programCourses(): HasMany
+    public function programCourses()
     {
         return $this->hasMany(ProgramCourse::class);
     }
 
-    public function previousRequirements(): HasMany
-    {
-        return $this->hasMany(CoursePreviousRequirement::class, 'course_id');
-    }
-
-    public function requiredBy(): HasMany
-    {
-        return $this->hasMany(CoursePreviousRequirement::class, 'previous_course_id');
-    }
-
-    public function groups(): HasMany
+    public function groups()
     {
         return $this->hasMany(Group::class);
+    }
+
+    public function previousRequirements()
+    {
+        return $this->belongsToMany(Course::class, 'course_previous_requirements', 'course_id', 'previous_course_id')
+            ->withTimestamps();
+    }
+
+    public function requiredFor()
+    {
+        return $this->belongsToMany(Course::class, 'course_previous_requirements', 'previous_course_id', 'course_id')
+            ->withTimestamps();
+    }
+
+    public function coursePreviousRequirements()
+    {
+        return $this->hasMany(CoursePreviousRequirement::class);
     }
 }

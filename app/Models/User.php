@@ -66,63 +66,47 @@ class User extends Authenticatable
         'timezone' => 'America/Lima',
     ];
 
-    public function teacherProfile(): HasOne
+    // Relaciones
+    public function teacherProfile()
     {
         return $this->hasOne(TeacherProfile::class);
     }
 
-    public function studentProfile(): HasOne
-    {
-        return $this->hasOne(StudentProfile::class);
-    }
-
-    public function groupParticipants(): HasMany
+    public function groupParticipations()
     {
         return $this->hasMany(GroupParticipant::class);
     }
 
-    public function attempts(): HasMany
+    public function enrolledGroups()
     {
-        return $this->hasMany(Attempt::class);
+        return $this->belongsToMany(Group::class, 'group_participants')
+            ->withPivot('role', 'enrollment_status', 'assignment_date')
+            ->withTimestamps();
     }
 
-    public function teacherApplications(): HasMany
+    public function gradeRecords()
     {
-        return $this->hasMany(TeacherApplication::class);
+        return $this->hasMany(GradeRecord::class);
     }
 
-    public function certificates(): HasMany
+    public function finalGrades()
     {
-        return $this->hasMany(Certificate::class);
+        return $this->hasMany(FinalGrade::class);
     }
 
-    public function diplomas(): HasMany
+    public function credentials()
     {
-        return $this->hasMany(Diploma::class);
+        return $this->hasMany(Credential::class);
     }
 
-    public function graduates(): HasMany
-    {
-        return $this->hasMany(Graduate::class);
-    }
-
-    public function createdEvaluations(): HasMany
+    public function createdEvaluations()
     {
         return $this->hasMany(Evaluation::class, 'teacher_creator_id');
     }
 
-    public function gradings(): HasMany
+    // Helpers
+    public function isTeacher()
     {
-        return $this->hasMany(Grading::class, 'teacher_grader_id');
-    }
-
-    public function teacherEvaluations(): HasMany
-    {
-        return $this->hasMany(TeacherEvaluation::class, 'teacher_id');
-    }
-
-    public function evaluationsAsEvaluator(): HasMany
-    {
-        return $this->hasMany(TeacherEvaluation::class, 'evaluator_id');
+        return $this->teacherProfile()->exists();
     }
 }
