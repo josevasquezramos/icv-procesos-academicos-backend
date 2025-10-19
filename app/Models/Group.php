@@ -64,4 +64,9 @@ class Group extends Model
     {
         return $this->hasMany(FinalGrade::class);
     }
+
+    public function credentials()
+    {
+        return $this->hasMany(Credential::class);
+    }
 }

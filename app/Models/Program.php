@@ -44,9 +44,4 @@ class Program extends Model
     {
         return $this->hasMany(ProgramCourse::class);
     }
-
-    public function credentials()
-    {
-        return $this->hasMany(Credential::class);
-    }
 }

@@ -12,10 +12,10 @@ class Credential extends Model
 
     protected $fillable = [
         'user_id',
-        'program_id',
+        'uuid',
+        'group_id',
         'type',
         'issue_date',
-        'verification_code',
     ];
 
     protected $casts = [
@@ -28,9 +28,9 @@ class Credential extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function program()
+    public function group()
     {
-        return $this->belongsTo(Program::class);
+        return $this->belongsTo(Group::class);
     }
 
     // Scopes
@@ -42,17 +42,5 @@ class Credential extends Model
     public function scopeDiplomas($query)
     {
         return $query->where('type', 'diploma');
-    }
-
-    // Boot method para generar código de verificación
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($credential) {
-            if (empty($credential->verification_code)) {
-                $credential->verification_code = strtoupper(Str::random(10));
-            }
-        });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\AcademicSetting;
 use App\Models\User;
 use App\Models\Program;
 use App\Models\Course;
@@ -27,6 +28,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        AcademicSetting::create([
+            'base_grade' => 20.00,
+            'min_passing_grade' => 11.00,
+        ]);
+
         // -----------------------------------------------------------------
         // 1. CREACIÓN DE USUARIOS
         // -----------------------------------------------------------------
@@ -504,7 +511,7 @@ class DatabaseSeeder extends Seeder
             'external_url' => 'https://example.com/exam/parcial-html',
             'evaluation_type' => 'Exam',
             'due_date' => '2025-02-15 23:59:59',
-            'weight' => 30.00,
+            'weight' => 1.00,
             'teacher_creator_id' => $teacher1->id,
         ]);
 
@@ -515,7 +522,7 @@ class DatabaseSeeder extends Seeder
             'external_url' => 'https://example.com/project/final',
             'evaluation_type' => 'Project',
             'due_date' => '2025-03-10 23:59:59',
-            'weight' => 40.00,
+            'weight' => 2.00,
             'teacher_creator_id' => $teacher1->id,
         ]);
 
@@ -526,7 +533,7 @@ class DatabaseSeeder extends Seeder
             'external_url' => 'https://example.com/quiz/laravel-routes',
             'evaluation_type' => 'Quiz',
             'due_date' => '2025-02-20 23:59:59',
-            'weight' => 10.00,
+            'weight' => 1.00,
             'teacher_creator_id' => $teacher2->id,
         ]);
 
@@ -537,7 +544,7 @@ class DatabaseSeeder extends Seeder
         $gradeRecord1 = GradeRecord::create([
             'evaluation_id' => $evaluation1->id,
             'user_id' => $student1->id,
-            'obtained_grade' => 85.50,
+            'obtained_grade' => 15.50,
             'feedback' => 'Excelente comprensión de HTML y CSS',
             'record_date' => now(),
         ]);
@@ -545,70 +552,84 @@ class DatabaseSeeder extends Seeder
         $gradeRecord2 = GradeRecord::create([
             'evaluation_id' => $evaluation1->id,
             'user_id' => $student2->id,
-            'obtained_grade' => 72.00,
+            'obtained_grade' => 11.00,
             'feedback' => 'Buen trabajo, pero necesita mejorar en flexbox',
+            'record_date' => now(),
+        ]);
+
+        $gradeRecord4 = GradeRecord::create([
+            'evaluation_id' => $evaluation2->id,
+            'user_id' => $student1->id,
+            'obtained_grade' => 18.00,
+            'feedback' => 'Buen trabajo',
+            'record_date' => now(),
+        ]);
+
+        $gradeRecord5 = GradeRecord::create([
+            'evaluation_id' => $evaluation2->id,
+            'user_id' => $student2->id,
+            'obtained_grade' => 7.00,
+            'feedback' => 'Decadencia',
             'record_date' => now(),
         ]);
 
         $gradeRecord3 = GradeRecord::create([
             'evaluation_id' => $evaluation3->id,
             'user_id' => $student3->id,
-            'obtained_grade' => 90.00,
+            'obtained_grade' => 15.00,
             'feedback' => 'Dominio completo de rutas en Laravel',
             'record_date' => now(),
         ]);
 
         // -----------------------------------------------------------------
-        // 13. FINAL_GRADES -----------------------------------------------------------------
+        // 13. FINAL_GRADES
+        // -----------------------------------------------------------------
 
-        $finalGrade1 = FinalGrade::create([
-            'user_id' => $student1->id,
-            'group_id' => $group1->id,
-            'final_grade' => 85.50,
-            'program_status' => 'Passed',
-            'calculation_date' => now(),
-        ]);
+        // $finalGrade1 = FinalGrade::create([
+        //     'user_id' => $student1->id,
+        //     'group_id' => $group1->id,
+        //     'final_grade' => 85.50,
+        //     'program_status' => 'Passed',
+        //     'calculation_date' => now(),
+        // ]);
 
-        $finalGrade2 = FinalGrade::create([
-            'user_id' => $student2->id,
-            'group_id' => $group1->id,
-            'final_grade' => 72.00,
-            'program_status' => 'Passed',
-            'calculation_date' => now(),
-        ]);
+        // $finalGrade2 = FinalGrade::create([
+        //     'user_id' => $student2->id,
+        //     'group_id' => $group1->id,
+        //     'final_grade' => 72.00,
+        //     'program_status' => 'Passed',
+        //     'calculation_date' => now(),
+        // ]);
 
-        $finalGrade3 = FinalGrade::create([
-            'user_id' => $student3->id,
-            'group_id' => $group2->id,
-            'final_grade' => 90.00,
-            'program_status' => 'In_progress',
-            'calculation_date' => now(),
-        ]);
+        // $finalGrade3 = FinalGrade::create([
+        //     'user_id' => $student3->id,
+        //     'group_id' => $group2->id,
+        //     'final_grade' => 90.00,
+        //     'program_status' => 'In_progress',
+        //     'calculation_date' => now(),
+        // ]);
 
         // -----------------------------------------------------------------
         // 14. CREDENTIALS
         // -----------------------------------------------------------------
 
-        $credential1 = Credential::create([
-            'user_id' => $student1->id,
-            'program_id' => $program1->id,
-            'type' => 'certificate',
-            'issue_date' => '2025-03-20',
-        ]);
+        // $credential1 = Credential::create([
+        //     'user_id' => $student1->id,
+        //     'group_id' => $group1->id,
+        //     'issue_date' => '2025-03-20',
+        // ]);
 
-        $credential2 = Credential::create([
-            'user_id' => $student2->id,
-            'program_id' => $program1->id,
-            'type' => 'diploma',
-            'issue_date' => '2025-03-20',
-        ]);
+        // $credential2 = Credential::create([
+        //     'user_id' => $student2->id,
+        //     'group_id' => $group1->id,
+        //     'issue_date' => '2025-03-20',
+        // ]);
 
-        $credential3 = Credential::create([
-            'user_id' => $student1->id,
-            'program_id' => $program2->id,
-            'type' => 'certificate',
-            'issue_date' => '2025-07-01',
-        ]);
+        // $credential3 = Credential::create([
+        //     'user_id' => $student1->id,
+        //     'group_id' => $group2->id,
+        //     'issue_date' => '2025-07-01',
+        // ]);
 
         $this->command->info('✅ Seeder ejecutado exitosamente!');
         $this->command->info('📊 Registros creados:');
@@ -622,8 +643,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Asistencias: ' . Attendance::count());
         $this->command->info('   - Evaluaciones: ' . Evaluation::count());
         $this->command->info('   - Registros de Calificaciones: ' . GradeRecord::count());
-        $this->command->info('   - Calificaciones Finales: ' . FinalGrade::count());
-        $this->command->info('   - Credenciales: ' . Credential::count());
+        // $this->command->info('   - Calificaciones Finales: ' . FinalGrade::count());
+        // $this->command->info('   - Credenciales: ' . Credential::count());
         $this->command->info('   - Program-Courses: ' . ProgramCourse::count());
         $this->command->info('   - Requisitos Previos: ' . CoursePreviousRequirement::count());
     }

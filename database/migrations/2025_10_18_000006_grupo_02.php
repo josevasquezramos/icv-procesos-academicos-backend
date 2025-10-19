@@ -174,18 +174,23 @@ return new class extends Migration {
 
         DB::statement('ALTER TABLE final_grades ADD CONSTRAINT final_grades_program_status_check CHECK (program_status IN (\'Passed\',\'Failed\',\'Withdrawn\',\'In_progress\'))');
 
-        // --- Certificados y Diplomas (Consolidado) ---
         Schema::create('credentials', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->unique();
             $table->bigInteger('user_id');
-            $table->bigInteger('program_id');
-            $table->string('type', 20); // 'certificate', 'diploma'
+            $table->bigInteger('group_id');
             $table->date('issue_date');
-            $table->string('verification_code', 255)->unique()->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('program_id')->references('id')->on('programs')->onDelete('cascade');
+            $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
+        });
+
+        Schema::create('academic_settings', function (Blueprint $table) {
+            $table->id();
+            $table->decimal('base_grade', 5, 2)->default(20.00);
+            $table->decimal('min_passing_grade', 5, 2)->default(11.00);
+            $table->timestamps();
         });
     }
 
@@ -194,6 +199,7 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('academic_settings');
         Schema::dropIfExists('credentials');
         Schema::dropIfExists('final_grades');
         Schema::dropIfExists('grade_records'); // Modificado
