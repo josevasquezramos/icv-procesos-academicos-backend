@@ -45,7 +45,7 @@ class CertificatePdfService
         $issueDate = $credential->issue_date ? \Carbon\Carbon::parse($credential->issue_date)->format('d/m/Y') : '';
 
         // 4. Generar URL de Verificación y QR
-        $verificationUrl = url('/api/credentials/verify/' . $credential->uuid);
+        $verificationUrl = route('credentials.verify', ['uuid' => $credential->uuid]);
         $qrCodeImage = 'data:image/png;base64,' . base64_encode(
             QrCode::format('png')->size(150)->generate($verificationUrl)
         );
