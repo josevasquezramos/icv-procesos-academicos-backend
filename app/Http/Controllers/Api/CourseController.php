@@ -57,6 +57,56 @@ class CourseController extends Controller
         }
     }
 
+    public function getGroupsByCourse($id)
+    {
+        try {
+            $course = Course::with(['groups', 'groups.participants.user'])
+                ->find($id);
+
+            if (!$course) {
+                return response()->json([
+                    'message' => 'Curso no encontrado.'
+                ], 404);
+            }
+
+            $groupsWithTeachersAndStudents = [];
+
+            foreach ($course->groups as $group) {
+                $teacher = $group->participants()->teachers()->first();
+
+                $students = $group->participants()->students()->get();
+
+                $groupsWithTeachersAndStudents[] = [
+                    'group_id' => $group->id,
+                    'group_name' => $group->name,
+                    'group_code' => $group->code,
+                    'status' => $group->status,
+                    'start_date' => $group->start_date,
+                    'end_date' => $group->end_date,
+                    'teacher' => $teacher ? $teacher->user : null,
+                    'students' => $students->map(function ($student) {
+                        return $student->user;
+                    }),
+                ];
+            }
+
+            return response()->json([
+                'course_id' => $course->id,
+                'course_title' => $course->title,
+                'groups' => $groupsWithTeachersAndStudents,
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error('Error fetching groups for course: ' . $e->getMessage());
+
+            return response()->json([
+                'message' => 'Error al obtener los grupos del curso.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
 
     public function show(string $id)
     {

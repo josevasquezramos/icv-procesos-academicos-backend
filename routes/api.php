@@ -23,6 +23,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::resource('courses', CourseController::class)->except('create', 'edit');
+    Route::get('/courses/{id}/groups', [CourseController::class, 'getGroupsByCourse']);
+
     Route::resource('groups', GroupController::class)->except('create', 'edit');
 
     Route::post('groups/{group}/complete', CompleteGroupController::class)->name('groups.complete');
