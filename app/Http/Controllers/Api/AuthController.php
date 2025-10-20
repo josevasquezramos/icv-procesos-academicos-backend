@@ -52,7 +52,7 @@ class AuthController extends Controller
                 'id' => $user->id,
                 'first_name' => $user->first_name,
                 'email' => $user->email,
-                // Puedes devolver más campos si los necesitas en el frontend
+                'role' => is_array($user->role) ? $user->role[0] : $user->role, // Obtener el primer elemento si es array
             ],
             // El frontend lo espera como "token"
             'token' => $token,
