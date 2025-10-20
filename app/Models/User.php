@@ -60,7 +60,7 @@ class User extends Authenticatable
     }
 
     protected $attributes = [
-        'role' => '"student"',
+        'role' => '["student"]',
         'status' => 'active',
         'synchronized' => true,
         'timezone' => 'America/Lima',
