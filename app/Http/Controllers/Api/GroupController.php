@@ -124,6 +124,55 @@ class GroupController extends Controller
         }
     }
 
+
+    public function joinGroup(Request $request, string $id)
+{
+    try {
+        // Validar que el grupo existe
+        $group = Group::find($id);
+        
+        if (!$group) {
+            return response()->json([
+                'message' => 'Grupo no encontrado.',
+            ], 404);
+        }
+
+        // Obtener el usuario autenticado
+        $user = $request->user();
+
+        // Verificar si el usuario ya está en el grupo
+        $alreadyEnrolled = GroupParticipant::where('group_id', $id)
+            ->where('user_id', $user->id)
+            ->exists();
+
+        if ($alreadyEnrolled) {
+            return response()->json([
+                'message' => 'Ya estás inscrito en este grupo.',
+            ], 400);
+        }
+
+        // Inscribir al estudiante en el grupo
+        GroupParticipant::create([
+            'group_id' => $id,
+            'user_id' => $user->id,
+            'role' => 'student',
+            'enrollment_status' => 'active',
+            'assignment_date' => now(),
+        ]);
+
+        return response()->json([
+            'message' => '¡Te has unido al grupo exitosamente!',
+        ], 200);
+
+    } catch (Exception $e) {
+        return response()->json([
+            'message' => 'Error al unirse al grupo.',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+
     public function update(Request $request, string $id)
     {
         //

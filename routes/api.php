@@ -24,4 +24,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('groups/{group}/complete', CompleteGroupController::class)->name('groups.complete');
     Route::get('credentials/{credential}/pdf', CredentialPdfController::class)->name('credentials.pdf');
+    Route::post('/groups/{id}/join', [GroupController::class, 'joinGroup']);
 });
