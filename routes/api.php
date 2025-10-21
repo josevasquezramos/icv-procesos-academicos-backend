@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\AcademicSettingController;
-use App\Http\Controllers\Api\ AttendanceController;
+use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\ClassesController;
 use App\Http\Controllers\Api\CoursePreviousRequirementController;
 use App\Http\Controllers\Api\CredentialController;
