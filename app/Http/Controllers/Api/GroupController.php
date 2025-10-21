@@ -175,11 +175,48 @@ class GroupController extends Controller
 
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $group = Group::findOrFail($id);
+
+            $validated = $request->validate([
+                'course_id' => 'sometimes|required|exists:courses,id',
+                'code' => 'sometimes|required|string|max:50',
+                'name' => 'sometimes|required|string|max:255',
+                'start_date' => 'sometimes|required|date',
+                'end_date' => 'sometimes|required|date|after_or_equal:start_date',
+                'status' => 'sometimes|required|string|max:50',
+            ]);
+
+            $group->update($validated);
+
+            return response()->json([
+                'message' => 'Group updated successfully',
+                'group' => $group,
+            ]);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al actualizar el grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
-    public function destroy(string $id)
+   public function destroy(string $id)
     {
-        //
+        try {
+            $group = Group::findOrFail($id);
+            $group->delete();
+
+            return response()->json([
+                'message' => 'Group deleted successfully'
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al eliminar el grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }

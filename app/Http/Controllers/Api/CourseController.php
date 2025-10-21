@@ -106,20 +106,95 @@ class CourseController extends Controller
         }
     }
 
+    public function store_course(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'course_id' => 'nullable|string|max:255',
+                'title' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+                'level' => 'nullable|string|max:100',
+                'course_image' => 'nullable|string|max:255',
+                'video_url' => 'nullable|string|max:255',
+                'duration' => 'nullable|numeric|min:0',
+                'sessions' => 'nullable|integer|min:0',
+                'selling_price' => 'nullable|numeric|min:0',
+                'discount_price' => 'nullable|numeric|min:0',
+                'prerequisites' => 'nullable|string',
+                'certificate_name' => 'nullable|boolean',
+                'certificate_issuer' => 'nullable|string|max:255',
+                'bestseller' => 'nullable|boolean',
+                'featured' => 'nullable|boolean',
+                'highest_rated' => 'nullable|boolean',
+                'status' => 'nullable|boolean',
+            ]);
+
+            $course = Course::create($validated);
+
+            return response()->json($course, 201);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
 
 
     public function show(string $id)
     {
-        //
+        try {
+            $course = Course::with(['programs', 'groups', 'previousRequirements', 'requiredFor'])
+                ->findOrFail($id);
+            
+            return response()->json($course);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 404);
+        }
     }
 
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $course = Course::findOrFail($id);
+
+            $validated = $request->validate([
+                'course_id' => 'sometimes|string|max:255',
+                'title' => 'sometimes|required|string|max:255',
+                'name' => 'sometimes|required|string|max:255',
+                'description' => 'nullable|string',
+                'level' => 'nullable|string|max:100',
+                'course_image' => 'nullable|string|max:255',
+                'video_url' => 'nullable|string|max:255',
+                'duration' => 'nullable|numeric|min:0',
+                'sessions' => 'nullable|integer|min:0',
+                'selling_price' => 'nullable|numeric|min:0',
+                'discount_price' => 'nullable|numeric|min:0',
+                'prerequisites' => 'nullable|string',
+                'certificate_name' => 'nullable|boolean',
+                'certificate_issuer' => 'nullable|string|max:255',
+                'bestseller' => 'nullable|boolean',
+                'featured' => 'nullable|boolean',
+                'highest_rated' => 'nullable|boolean',
+                'status' => 'nullable|boolean',
+            ]);
+
+            $course->update($validated);
+
+            return response()->json($course);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     public function destroy(string $id)
     {
-        //
+        try {
+            $course = Course::findOrFail($id);
+            $course->delete();
+
+            return response()->json(['message' => 'Course deleted successfully'], 200);
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
