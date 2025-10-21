@@ -192,6 +192,48 @@ return new class extends Migration {
             $table->decimal('min_passing_grade', 5, 2)->default(11.00);
             $table->timestamps();
         });
+
+        Schema::create('teacher_offers', function (Blueprint $table) {
+            $table->id();
+            $table->string('title', 255);
+            $table->text('description');
+            $table->text('requirements')->nullable();
+            $table->string('status', 20)->default('open');
+            $table->timestamps();
+        });
+
+        DB::statement("ALTER TABLE teacher_offers ADD CONSTRAINT teacher_offers_status_check CHECK (status IN ('open', 'closed'))");
+
+        Schema::create('teacher_applications', function (Blueprint $table) {
+            $table->id();
+            $table->bigInteger('user_id'); // El usuario (postulante)
+            $table->bigInteger('teacher_offer_id'); // La oferta a la que postula
+
+            // --- CAMPOS REQUERIDOS (Réplica de teacher_profiles) ---
+            // Se capturan aquí para tener una "foto" del postulante en ese momento
+            $table->string('professional_title', 200);
+            $table->string('specialty', 100);
+            $table->bigInteger('experience_years')->default(0);
+            $table->text('biography')->nullable();
+            // --- Fin de campos de perfil ---
+
+            // --- CAMPOS ADICIONALES (propios de la postulación) ---
+            $table->string('cv_path', 500); // Ruta al archivo del CV (ej. en S3 o storage)
+            $table->text('cover_letter')->nullable(); // Carta de presentación (opcional)
+            $table->string('status', 20)->default('pending'); // 'pending', 'accepted', 'rejected'
+            $table->text('admin_feedback')->nullable(); // Notas internas del revisor
+            $table->timestamps(); // application_date es created_at
+
+            // --- Llaves foráneas y constraints ---
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('teacher_offer_id')->references('id')->on('teacher_offers')->onDelete('cascade');
+            
+            // Un usuario solo puede postular una vez a la misma oferta
+            $table->unique(['user_id', 'teacher_offer_id'], 'user_offer_unique_application');
+        });
+        
+        DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_status_check CHECK (status IN ('pending', 'accepted', 'rejected'))");
+        DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_experience_years_check CHECK (experience_years >= 0)");
     }
 
     /**
@@ -199,10 +241,12 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('teacher_applications');
+        Schema::dropIfExists('teacher_offers');
         Schema::dropIfExists('academic_settings');
         Schema::dropIfExists('credentials');
         Schema::dropIfExists('final_grades');
-        Schema::dropIfExists('grade_records'); // Modificado
+        Schema::dropIfExists('grade_records');
         Schema::dropIfExists('evaluations');
         Schema::dropIfExists('attendances');
         Schema::dropIfExists('group_participants');
