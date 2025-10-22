@@ -68,14 +68,15 @@ class User extends Authenticatable
 
     // Relaciones
     public function teacherProfile()
-    {
-        return $this->hasOne(TeacherProfile::class);
-    }
+{
+    return $this->hasOne(TeacherProfile::class, 'user_id');
+}
 
-    public function groupParticipations()
-    {
-        return $this->hasMany(GroupParticipant::class);
-    }
+
+    public function groupParticipants()
+{
+    return $this->hasMany(GroupParticipant::class, 'user_id');
+}
 
     public function enrolledGroups()
     {
@@ -90,14 +91,14 @@ class User extends Authenticatable
     }
 
     public function finalGrades()
-    {
-        return $this->hasMany(FinalGrade::class);
-    }
+{
+    return $this->hasMany(FinalGrade::class, 'user_id');
+}
 
     public function credentials()
-    {
-        return $this->hasMany(Credential::class);
-    }
+{
+    return $this->hasMany(Credential::class, 'user_id');
+}
 
     public function createdEvaluations()
     {

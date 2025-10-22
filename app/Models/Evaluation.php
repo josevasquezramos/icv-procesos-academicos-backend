@@ -27,19 +27,21 @@ class Evaluation extends Model
 
     // Relaciones
     public function group()
-    {
-        return $this->belongsTo(Group::class);
-    }
+{
+    return $this->belongsTo(Group::class, 'group_id');
+}
+
+public function gradeRecords()
+{
+    return $this->hasMany(GradeRecord::class, 'evaluation_id');
+}
 
     public function teacherCreator()
     {
         return $this->belongsTo(User::class, 'teacher_creator_id');
     }
 
-    public function gradeRecords()
-    {
-        return $this->hasMany(GradeRecord::class);
-    }
+    
 
     // Scopes
     public function scopeByType($query, $type)

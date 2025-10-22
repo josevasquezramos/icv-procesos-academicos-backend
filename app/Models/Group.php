@@ -26,8 +26,9 @@ class Group extends Model
     // Relaciones
     public function course()
     {
-        return $this->belongsTo(Course::class);
+    return $this->belongsTo(Course::class, 'course_id');
     }
+
 
     public function classes()
     {
@@ -35,9 +36,9 @@ class Group extends Model
     }
 
     public function participants()
-    {
-        return $this->hasMany(GroupParticipant::class);
-    }
+{
+    return $this->hasMany(GroupParticipant::class, 'group_id');
+}
 
     public function students()
     {
@@ -56,17 +57,17 @@ class Group extends Model
     }
 
     public function evaluations()
-    {
-        return $this->hasMany(Evaluation::class);
-    }
+{
+    return $this->hasMany(Evaluation::class, 'group_id');
+}
 
     public function finalGrades()
-    {
-        return $this->hasMany(FinalGrade::class);
-    }
+{
+    return $this->hasMany(FinalGrade::class, 'group_id');
+}
 
-    public function credentials()
-    {
-        return $this->hasMany(Credential::class);
-    }
+public function credentials()
+{
+    return $this->hasMany(Credential::class, 'group_id');
+}
 }

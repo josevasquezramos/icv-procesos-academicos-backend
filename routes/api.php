@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\ProgramController;
 use App\Http\Controllers\Api\ProgramCourseController;
 use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\ProfileController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
@@ -51,5 +52,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('program-courses', ProgramCourseController::class);
     Route::apiResource('teacher-profiles', TeacherProfileController::class);
     Route::apiResource('users', UserController::class);
+
+    // Ruta protegida con autenticación
+    Route::middleware('auth:sanctum')->group(function () {
+    // Perfil del usuario autenticado
+    Route::get('/profile', [ProfileController::class, 'show']);
+});
 
 });
