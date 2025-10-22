@@ -53,10 +53,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teacher-profiles', TeacherProfileController::class);
     Route::apiResource('users', UserController::class);
 
-    // Ruta protegida con autenticación
-    Route::middleware('auth:sanctum')->group(function () {
-    // Perfil del usuario autenticado
     Route::get('/profile', [ProfileController::class, 'show']);
-});
-
 });
