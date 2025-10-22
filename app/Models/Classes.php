@@ -12,6 +12,7 @@ class Classes extends Model
     protected $fillable = [
         'group_id',
         'class_name',
+        'meeting_url',
         'description',
         'class_date',
         'start_time',
@@ -34,5 +35,10 @@ class Classes extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'class_id');
+    }
+
+    public function classMaterials()
+    {
+        return $this->hasMany(ClassMaterial::class, 'class_id');
     }
 }

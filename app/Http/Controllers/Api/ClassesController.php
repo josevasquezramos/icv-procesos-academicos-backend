@@ -26,6 +26,7 @@ class ClassesController extends Controller
         $validated = $request->validate([
             'group_id' => 'required|exists:groups,id',
             'class_name' => 'required|string|max:255',
+            'meeting_url' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'class_date' => 'required|date',
             'start_time' => 'required|date_format:Y-m-d H:i:s',
@@ -86,6 +87,7 @@ class ClassesController extends Controller
         $validated = $request->validate([
             'group_id' => 'sometimes|required|exists:groups,id',
             'class_name' => 'sometimes|required|string|max:255',
+            'meeting_url' => 'nullable|string|max:500',
             'description' => 'nullable|string',
             'class_date' => 'sometimes|required|date',
             'start_time' => 'sometimes|required|date_format:Y-m-d H:i:s',

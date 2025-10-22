@@ -65,13 +65,14 @@ return new class extends Migration {
 
             $table->foreign('course_id')->references('id')->on('courses')->onDelete('cascade');
         });
-        
+
         DB::statement('ALTER TABLE groups ADD CONSTRAINT groups_status_check CHECK (status IN (\'draft\',\'approved\',\'open\',\'in_progress\',\'completed\',\'cancelled\',\'suspended\'))');
 
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('group_id');
             $table->string('class_name', 100);
+            $table->string('meeting_url', 500)->nullable();
             $table->text('description')->nullable();
             $table->date('class_date');
             $table->time('start_time');
@@ -81,8 +82,22 @@ return new class extends Migration {
 
             $table->foreign('group_id')->references('id')->on('groups')->onDelete('cascade');
         });
-        
+
         DB::statement('ALTER TABLE classes ADD CONSTRAINT classes_class_status_check CHECK (class_status IN (\'SCHEDULED\',\'IN_PROGRESS\',\'FINISHED\',\'CANCELLED\'))');
+
+        Schema::create('class_materials', function (Blueprint $table) {
+            $table->id(); // id del material
+            $table->unsignedBigInteger('class_id'); // id de la clase (llave foránea)
+            $table->text('material_url'); // material_url (uso text para URLs largas)
+            $table->string('type', 50); // type (ej: 'PDF', 'Video', 'Enlace')
+            $table->timestamps(); // Opcional, pero recomendado (created_at, updated_at)
+
+            // Definir la relación con la tabla 'classes'
+            $table->foreign('class_id')
+                ->references('id')
+                ->on('classes')
+                ->onDelete('cascade'); // Si se borra la clase, se borran sus materiales
+        });
 
         // --- Participantes y Asistencia ---
         Schema::create('group_participants', function (Blueprint $table) {
@@ -116,7 +131,7 @@ return new class extends Migration {
         });
 
         // --- Sistema de Evaluaciones y Calificaciones (Súper Simplificado) ---
-        
+
         /**
          * Define la "columna" en el libro de notas (ej. "Examen Parcial", "Proyecto Final").
          * El profesor puede poner un link a un Google Form o dar instrucciones en la descripción.
@@ -227,11 +242,11 @@ return new class extends Migration {
             // --- Llaves foráneas y constraints ---
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('teacher_offer_id')->references('id')->on('teacher_offers')->onDelete('cascade');
-            
+
             // Un usuario solo puede postular una vez a la misma oferta
             $table->unique(['user_id', 'teacher_offer_id'], 'user_offer_unique_application');
         });
-        
+
         DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_status_check CHECK (status IN ('pending', 'accepted', 'rejected'))");
         DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_experience_years_check CHECK (experience_years >= 0)");
     }
