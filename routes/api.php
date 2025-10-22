@@ -41,6 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('academic-settings', AcademicSettingController::class);
     Route::apiResource('attendances', AttendanceController::class);
     Route::apiResource('classes', ClassesController::class);
+    Route::get('classes/group/{groupId}', [ClassesController::class, 'getByGroup']);
+    //Route::patch('/classes/{class}/materials/{material}/visibility', [ClassMaterialsController::class, 'toggleVisibility']);
     Route::apiResource('course-previous-requirements', CoursePreviousRequirementController::class);
     Route::apiResource('credentials', CredentialController::class);
     Route::apiResource('evaluations', EvaluationController::class);
