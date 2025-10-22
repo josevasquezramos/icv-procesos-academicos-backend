@@ -17,6 +17,7 @@ use App\Models\GradeRecord;
 use App\Models\ProgramCourse;
 use App\Models\TeacherProfile;
 use App\Models\Credential;
+use App\Models\ClassMaterial;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -631,6 +632,28 @@ class DatabaseSeeder extends Seeder
         //     'issue_date' => '2025-07-01',
         // ]);
 
+        // -----------------------------------------------------------------
+        // 15. CREDENTIALS
+        // --------------------------------------------------------------
+        // Seeders para class_materials
+        ClassMaterial::create([
+        'class_id' => 1, // Asegúrate de que este class_id exista en tu tabla classes
+        'material_url' => 'https://example.com/pdfs/ introduccion-programacion.pdf',
+        'type' => 'PDF',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://www.youtube.com/watch?v=ejemplo123',
+        'type' => 'Video',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 2, // Asegúrate de que este class_id exista
+        'material_url' => 'https://docs.google.com/presentation/d/ejemplo456',
+        'type' => 'Presentación',
+        ]);
+
         $this->command->info('✅ Seeder ejecutado exitosamente!');
         $this->command->info('📊 Registros creados:');
         $this->command->info('   - Usuarios: ' . User::count());
@@ -646,6 +669,7 @@ class DatabaseSeeder extends Seeder
         // $this->command->info('   - Calificaciones Finales: ' . FinalGrade::count());
         // $this->command->info('   - Credenciales: ' . Credential::count());
         $this->command->info('   - Program-Courses: ' . ProgramCourse::count());
+        $this->command->info('   - Class-Material: ' . ClassMaterial::count());
         $this->command->info('   - Requisitos Previos: ' . CoursePreviousRequirement::count());
     }
 }

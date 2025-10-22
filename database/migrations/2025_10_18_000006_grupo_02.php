@@ -271,5 +271,6 @@ return new class extends Migration {
         Schema::dropIfExists('program_courses');
         Schema::dropIfExists('student_profiles');
         Schema::dropIfExists('teacher_profiles');
+        Schema::dropIfExists('class_materials');
     }
 };

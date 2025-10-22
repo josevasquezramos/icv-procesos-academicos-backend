@@ -4,9 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ClassMaterial extends Model
 {
+    use HasFactory;
     /**
      * El nombre de la tabla asociada con el modelo.
      *
