@@ -57,12 +57,12 @@ class ClassesController extends Controller
             ->where('group_id', $groupId)
             ->get();
 
-        if ($classes->isEmpty()) {
-            return response()->json(['message' => 'No classes found for this group'], 404);
-        }
-
-        return response()->json($classes);
+        return response()->json([
+            'classes' => $classes,
+            'count' => $classes->count(),
+        ], 200);
     }
+
 
     public function toggleVisibility(Request $request, string $classId, string $materialId): JsonResponse
     {
