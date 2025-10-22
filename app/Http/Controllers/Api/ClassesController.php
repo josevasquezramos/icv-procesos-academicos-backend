@@ -49,6 +49,35 @@ class ClassesController extends Controller
     }
 
     /**
+     * Display a listing of classes by group ID.
+     */
+    public function getByGroup(string $groupId): JsonResponse
+    {
+        $classes = Classes::with(['group', 'attendances'])
+            ->where('group_id', $groupId)
+            ->get();
+
+        return response()->json([
+            'classes' => $classes,
+            'count' => $classes->count(),
+        ], 200);
+    }
+
+
+    public function toggleVisibility(Request $request, string $classId, string $materialId): JsonResponse
+    {
+        $material = Classes::where('class_id', $classId)
+            ->findOrFail($materialId);
+
+        $validated = $request->validate([
+            'visibility' => 'required|string|in:public,private'
+        ]);
+
+        $material->update(['visibility' => $validated['visibility']]);
+
+        return response()->json($material);
+    }
+    /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id): JsonResponse
