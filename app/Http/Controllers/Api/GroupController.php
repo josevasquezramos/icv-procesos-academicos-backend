@@ -106,6 +106,8 @@ class GroupController extends Controller
                         'class_date' => $class->class_date,
                         'start_time' => $class->start_time->format('H:i'), // Formateamos el tiempo
                         'end_time' => $class->end_time->format('H:i'), // Formateamos el tiempo
+                        'description' => $class->description,
+                        'class_status' => $class->class_status,
                     ];
                 }),
                 'previous_courses' => $previousCourses, // Cursos previos asociados al curso del grupo
@@ -130,7 +132,7 @@ class GroupController extends Controller
     try {
         // Validar que el grupo existe
         $group = Group::find($id);
-        
+
         if (!$group) {
             return response()->json([
                 'message' => 'Grupo no encontrado.',
