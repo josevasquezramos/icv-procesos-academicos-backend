@@ -102,7 +102,9 @@ class SocialiteController extends Controller
             $cookie = cookie('auth_data', json_encode($responseData), 60*24, '/', null, false, false);
 
             // Redirigimos al dashboard con la cookie
-            return redirect('/academico/dashboard')->cookie($cookie);
+            return redirect('https://instituto.cetivirgendelapuerta.com/academico/dashboard')
+            ->cookie($cookie);
+
 
         } catch (Exception $e) {
             // Registramos el error completo en los logs de Laravel
