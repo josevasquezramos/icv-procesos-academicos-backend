@@ -92,19 +92,25 @@ class SocialiteController extends Controller
                     'id' => $user->id,
                     'first_name' => $user->first_name,
                     'email' => $user->email,
-                    'role' => $user->role ?? null,
+                    'profile_photo' => $user->profile_photo,
+                    'role' => 'student',
                 ],
                 'token' => $token,
                 'token_type' => 'Bearer'
             ];
 
             // Guardamos el JSON como string en una cookie
-            $cookie = cookie('auth_data', json_encode($responseData), 60*24, '/', null, false, false);
+            setcookie(
+                'auth_data',
+                json_encode($responseData),
+                time() + 60*60*24,
+                '/',
+                '',
+                false,
+                false
+            );
 
-            // Redirigimos al dashboard con la cookie
-            return redirect('https://instituto.cetivirgendelapuerta.com/academico/dashboard')
-            ->cookie($cookie);
-
+            return redirect('https://instituto.cetivirgendelapuerta.com/academico/dashboard');
 
         } catch (Exception $e) {
             // Registramos el error completo en los logs de Laravel
