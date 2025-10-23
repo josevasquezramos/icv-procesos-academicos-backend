@@ -289,7 +289,6 @@ class DatabaseSeeder extends Seeder
             'level' => 'basic',
             'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192083/el-desarrollo-web_oapcly.webp',
             'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192206/Que_aprender_para_ser_desarrollador_frontend_este_2025_-_HolaMundo_1080p_h264_lrr923.mp4',
-            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 40.00,
             'sessions' => 12,
             'selling_price' => 500.00,
@@ -311,7 +310,6 @@ class DatabaseSeeder extends Seeder
             'level' => 'intermediate',
             'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192261/f28f650f683fdbde9e956191d7d34d17_ctovmw.webp',
             'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192516/Qu%C3%A9_es_Laravel_y_como_funciona_-_Develoteca_-_Oscar_Uh_720p_h264_tnlx0v.mp4',
-            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 60.00,
             'sessions' => 18,
             'selling_price' => 800.00,
@@ -333,7 +331,6 @@ class DatabaseSeeder extends Seeder
             'level' => 'advanced',
             'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192364/React_Vs_Vue_3fa266b582_ufpj2r.jpg',
             'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192623/React_vs_Vue_-_midulive_360p_h264_pabdcw.mp4',
-            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 50.00,
             'sessions' => 15,
             'selling_price' => 700.00,
@@ -472,6 +469,7 @@ class DatabaseSeeder extends Seeder
         $class1 = Classes::create([
             'group_id' => $group1->id,
             'class_name' => 'Introducción a HTML',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'description' => 'Primera sesión sobre estructuras HTML básicas',
             'class_date' => '2025-01-15',
             'start_time' => '2025-01-15 09:00:00',
@@ -482,6 +480,7 @@ class DatabaseSeeder extends Seeder
         $class2 = Classes::create([
             'group_id' => $group1->id,
             'class_name' => 'CSS y Diseño Responsivo',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'description' => 'Aprende a estilizar páginas web con CSS',
             'class_date' => '2025-01-17',
             'start_time' => '2025-01-17 09:00:00',
@@ -492,6 +491,7 @@ class DatabaseSeeder extends Seeder
         $class3 = Classes::create([
             'group_id' => $group1->id,
             'class_name' => 'JavaScript Básico',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'description' => 'Introducción a la programación con JavaScript',
             'class_date' => '2025-01-20',
             'start_time' => '2025-01-20 09:00:00',
