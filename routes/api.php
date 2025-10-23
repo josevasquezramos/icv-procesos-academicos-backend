@@ -52,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('evaluations/group/{groupId}', [EvaluationController::class, 'getByGroup']);
     Route::apiResource('final-grades', FinalGradeController::class);
     Route::apiResource('grade-records', GradeRecordController::class);
+    Route::get('grade-records/group/{groupId}', [GradeRecordController::class, 'getByGroup']);
     Route::apiResource('group-participants', GroupParticipantController::class);
     Route::apiResource('programs', ProgramController::class);
     Route::apiResource('program-courses', ProgramCourseController::class);
