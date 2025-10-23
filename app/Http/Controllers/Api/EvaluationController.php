@@ -49,6 +49,33 @@ class EvaluationController extends Controller
         return response()->json($evaluation);
     }
 
+    public function getByGroup(string $groupId): JsonResponse
+    {
+        try {
+            $evaluations = Evaluation::with(['teacherCreator'])
+                ->where('group_id', $groupId)
+                ->get();
+
+            if ($evaluations->isEmpty()) {
+                return response()->json([
+                    'message' => 'No se encontraron evaluaciones para este grupo.',
+                    'evaluations' => [],
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Evaluaciones del grupo obtenidas correctamente.',
+                'evaluations' => $evaluations,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener las evaluaciones del grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     /**
      * Update the specified resource in storage.
      */
