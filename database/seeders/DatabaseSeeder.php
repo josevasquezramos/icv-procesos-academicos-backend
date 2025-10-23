@@ -159,6 +159,26 @@ class DatabaseSeeder extends Seeder
             'synchronized' => true,
         ]);
 
+        $student4 = User::create([
+            'first_name' => 'NILTON',
+            'last_name' => 'RAMOS ENCARNACION',
+            'full_name' => 'NILTON RAMOS ENCARNACION',
+            'dni' => '75412099',
+            'document' => 'DOC888888',
+            'email' => 'niltonencarnacion17@gmail.com',
+            'password' => Hash::make('password'),
+            'phone_number' => '+51951011604',
+            'address' => 'Asent. H. Corazón de Jesús',
+            'birth_date' => '2003-03-14',
+            'role' => ['student'],
+            'gender' => 'male',
+            'country' => 'Peru',
+            'country_location' => 'Chimbote',
+            'status' => 'active',
+            'email_verified_at' => now(),
+            'synchronized' => true,
+        ]);
+
         // -----------------------------------------------------------------
         // 2. PERFILES DE PROFESORES
         // -----------------------------------------------------------------
@@ -267,8 +287,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Fundamentos de HTML, CSS y JavaScript',
             'description' => 'Curso básico de desarrollo web para principiantes',
             'level' => 'basic',
-            'course_image' => 'https://example.com/courses/web101.jpg',
-            'video_url' => 'https://example.com/videos/web101.mp4',
+            'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192083/el-desarrollo-web_oapcly.webp',
+            'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192206/Que_aprender_para_ser_desarrollador_frontend_este_2025_-_HolaMundo_1080p_h264_lrr923.mp4',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 40.00,
             'sessions' => 12,
             'selling_price' => 500.00,
@@ -288,8 +309,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Desarrollo de aplicaciones con Laravel',
             'description' => 'Curso avanzado de desarrollo backend con Laravel',
             'level' => 'intermediate',
-            'course_image' => 'https://example.com/courses/laravel.jpg',
-            'video_url' => 'https://example.com/videos/laravel.mp4',
+            'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192261/f28f650f683fdbde9e956191d7d34d17_ctovmw.webp',
+            'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192516/Qu%C3%A9_es_Laravel_y_como_funciona_-_Develoteca_-_Oscar_Uh_720p_h264_tnlx0v.mp4',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 60.00,
             'sessions' => 18,
             'selling_price' => 800.00,
@@ -309,8 +331,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Frameworks JavaScript Modernos',
             'description' => 'Domina los frameworks más populares de JavaScript',
             'level' => 'advanced',
-            'course_image' => 'https://example.com/courses/react-vue.jpg',
-            'video_url' => 'https://example.com/videos/react-vue.mp4',
+            'course_image' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761192364/React_Vs_Vue_3fa266b582_ufpj2r.jpg',
+            'video_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192623/React_vs_Vue_-_midulive_360p_h264_pabdcw.mp4',
+            'meeting_url' => 'https://meet.google.com/abc-defg-hij',
             'duration' => 50.00,
             'sessions' => 15,
             'selling_price' => 700.00,
@@ -638,20 +661,56 @@ class DatabaseSeeder extends Seeder
         // Seeders para class_materials
         ClassMaterial::create([
         'class_id' => 1, // Asegúrate de que este class_id exista en tu tabla classes
-        'material_url' => 'https://example.com/pdfs/ introduccion-programacion.pdf',
+        'material_url' => 'https://drive.google.com/file/d/1cHLRtqRQ75mhjIXoBHioxTovixZtBs5q/view?usp=drivesdk',
         'type' => 'PDF',
         ]);
 
         ClassMaterial::create([
         'class_id' => 1,
-        'material_url' => 'https://www.youtube.com/watch?v=ejemplo123',
-        'type' => 'Video',
+        'material_url' => 'https://drive.google.com/file/d/1fqXj6xmvEUTVH27tENFASpH_caYn6Mbj/view?usp=drivesdk',
+        'type' => 'PDF',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://res.cloudinary.com/dshi5w2wt/video/upload/v1761192975/Introducci%C3%B3n_a_HTML_Qu%C3%A9_es_y_c%C3%B3mo_funciona_HTML_-_DropCoding_360p_h264_atctpm.mp4',
+        'type' => 'VIDEO',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://res.cloudinary.com/dshi5w2wt/image/upload/v1761195457/xjjtjo1hym5bqcfrxwlj.png',
+        'type' => 'IMAGEN',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://docs.google.com/presentation/d/1n7cUzRp63lgiNbYQrUbPqVGVkVYH9Hnf/edit?usp=drivesdk&ouid=103623631906412399344&rtpof=true&sd=true',
+        'type' => 'PPTX',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://docs.google.com/document/d/1nxP1NbhPdhRrQRan_2ofztIPPLuQnK_G/edit?usp=drivesdk&ouid=103623631906412399344&rtpof=true&sd=true',
+        'type' => 'DOCX',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://docs.google.com/spreadsheets/d/1YW1OmkV91AyiXeRHU5aC6eHbEIED1LZg/edit?usp=drivesdk&ouid=103623631906412399344&rtpof=true&sd=true',
+        'type' => 'XLSX',
+        ]);
+
+        ClassMaterial::create([
+        'class_id' => 1,
+        'material_url' => 'https://github.com/josevasquezramos/icv-procesos-academicos-backend',
+        'type' => 'ENLACE',
         ]);
 
         ClassMaterial::create([
         'class_id' => 2, // Asegúrate de que este class_id exista
-        'material_url' => 'https://docs.google.com/presentation/d/ejemplo456',
-        'type' => 'Presentación',
+        'material_url' => 'https://docs.google.com/presentation/d/1EVtQAxvBnDuiGPtUCmnzwACQEFeA7VWm/edit?usp=drivesdk&ouid=103623631906412399344&rtpof=true&sd=true',
+        'type' => 'PPTX',
         ]);
 
         $this->command->info('✅ Seeder ejecutado exitosamente!');
