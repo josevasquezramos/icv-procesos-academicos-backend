@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evaluation;
 use App\Models\GradeRecord;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -54,6 +55,59 @@ class GradeRecordController extends Controller
     {
         $gradeRecord = GradeRecord::with(['evaluation', 'student'])->findOrFail($id);
         return response()->json($gradeRecord);
+    }
+
+    /**
+     * Obtener evaluaciones y calificaciones por grupo.
+     */
+    public function getByGroup(string $groupId): JsonResponse
+    {
+        try {
+            // Obtener las evaluaciones del grupo
+            $evaluations = Evaluation::with([
+                'gradeRecords.student' // Trae las calificaciones con los estudiantes
+            ])->where('group_id', $groupId)->get();
+
+            if ($evaluations->isEmpty()) {
+                return response()->json([
+                    'message' => 'No se encontraron evaluaciones para este grupo.',
+                    'evaluations' => [],
+                ], 200);
+            }
+
+            // Formatear la respuesta para incluir estudiantes y sus calificaciones
+            $evaluationsData = $evaluations->map(function ($evaluation) {
+                return [
+                    'id' => $evaluation->id,
+                    'title' => $evaluation->title,
+                    'description' => $evaluation->description,
+                    'evaluation_type' => $evaluation->evaluation_type,
+                    'due_date' => $evaluation->due_date,
+                    'weight' => $evaluation->weight,
+                    'teacher_creator_id' => $evaluation->teacher_creator_id,
+                    'grades' => $evaluation->gradeRecords->map(function ($gradeRecord) {
+                        return [
+                            'student_id' => $gradeRecord->student->id,
+                            'student_name' => $gradeRecord->student->full_name,
+                            'obtained_grade' => $gradeRecord->obtained_grade,
+                            'feedback' => $gradeRecord->feedback,
+                            'record_date' => $gradeRecord->record_date,
+                        ];
+                    }),
+                ];
+            });
+
+            return response()->json([
+                'message' => 'Evaluaciones y calificaciones obtenidas correctamente.',
+                'evaluations' => $evaluationsData,
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener evaluaciones y calificaciones del grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
