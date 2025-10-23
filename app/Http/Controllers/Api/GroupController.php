@@ -72,6 +72,10 @@ class GroupController extends Controller
             // Obtener los estudiantes (students) del grupo
             $students = $group->participants()->students()->get();
 
+            $studentsData = $students->map(function ($p) {
+                return $this->formatUser($p->user, ['student']);
+            });
+
             // Obtener los cursos previos
             $previousCourses = $group->course->coursePreviousRequirements->map(function ($requirement) {
                 return [
@@ -90,14 +94,7 @@ class GroupController extends Controller
                 'end_date' => $group->end_date,
                 'participants' => [
                     'teacher' => $teacher ? $teacher->user : null, // Profesor, si existe
-                    'students' => $students->map(function ($student) {
-                        return [
-                            'id' => $student->user->id,
-                            'name' => $student->user->name,
-                            'role' => 'Estudiante', // Role es siempre "Estudiante" para los estudiantes
-                            'expertise_area' => $student->user->expertise_area ?? null, // Solo si el campo existe
-                        ];
-                    }),
+                    'students' => $studentsData,
                 ],
                 'classes' => $group->classes->map(function ($class) {
                     return [
@@ -128,52 +125,82 @@ class GroupController extends Controller
 
 
     public function joinGroup(Request $request, string $id)
-{
-    try {
-        // Validar que el grupo existe
-        $group = Group::find($id);
+    {
+        try {
+            // Validar que el grupo existe
+            $group = Group::find($id);
 
-        if (!$group) {
+            if (!$group) {
+                return response()->json([
+                    'message' => 'Grupo no encontrado.',
+                ], 404);
+            }
+
+            // Obtener el usuario autenticado
+            $user = $request->user();
+
+            // Verificar si el usuario ya está en el grupo
+            $alreadyEnrolled = GroupParticipant::where('group_id', $id)
+                ->where('user_id', $user->id)
+                ->exists();
+
+            if ($alreadyEnrolled) {
+                return response()->json([
+                    'message' => 'Ya estás inscrito en este grupo.',
+                ], 400);
+            }
+
+            // Inscribir al estudiante en el grupo
+            GroupParticipant::create([
+                'group_id' => $id,
+                'user_id' => $user->id,
+                'role' => 'student',
+                'enrollment_status' => 'active',
+                'assignment_date' => now(),
+            ]);
+
             return response()->json([
-                'message' => 'Grupo no encontrado.',
-            ], 404);
-        }
+                'message' => '¡Te has unido al grupo exitosamente!',
+            ], 200);
 
-        // Obtener el usuario autenticado
-        $user = $request->user();
-
-        // Verificar si el usuario ya está en el grupo
-        $alreadyEnrolled = GroupParticipant::where('group_id', $id)
-            ->where('user_id', $user->id)
-            ->exists();
-
-        if ($alreadyEnrolled) {
+        } catch (Exception $e) {
             return response()->json([
-                'message' => 'Ya estás inscrito en este grupo.',
-            ], 400);
+                'message' => 'Error al unirse al grupo.',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-
-        // Inscribir al estudiante en el grupo
-        GroupParticipant::create([
-            'group_id' => $id,
-            'user_id' => $user->id,
-            'role' => 'student',
-            'enrollment_status' => 'active',
-            'assignment_date' => now(),
-        ]);
-
-        return response()->json([
-            'message' => '¡Te has unido al grupo exitosamente!',
-        ], 200);
-
-    } catch (Exception $e) {
-        return response()->json([
-            'message' => 'Error al unirse al grupo.',
-            'error' => $e->getMessage(),
-        ], 500);
     }
-}
 
+    public function getCompletedGroupsByStudent($userId)
+    {
+        try {
+            $groups = Group::where('status', 'completed')
+                ->whereHas('participants', function ($query) use ($userId) {
+                    $query->where('user_id', $userId)
+                        ->where('role', 'student');
+                })
+                ->with(['course', 'participants.user'])
+                ->get();
+
+            if ($groups->isEmpty()) {
+                return response()->json([
+                    'message' => 'No se encontraron grupos completados para este estudiante.',
+                    'groups' => [],
+                ], 200);
+            }
+
+            return response()->json([
+                'message' => 'Grupos completados encontrados.',
+                'groups' => $groups,
+            ], 200);
+
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'Error al obtener los grupos completados.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 
     public function update(Request $request, string $id)
     {
@@ -221,4 +248,35 @@ class GroupController extends Controller
             ], 500);
         }
     }
+
+    private function formatUser($user, $roles = [])
+    {
+        return [
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'full_name' => $user->full_name,
+            'dni' => $user->dni ?? null,
+            'document' => $user->document ?? null,
+            'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
+            'phone_number' => $user->phone_number ?? null,
+            'address' => $user->address ?? null,
+            'birth_date' => $user->birth_date ?? null,
+            'role' => $roles,
+            'gender' => $user->gender ?? null,
+            'country' => $user->country ?? null,
+            'country_location' => $user->country_location ?? null,
+            'timezone' => $user->timezone ?? null,
+            'profile_photo' => $user->profile_photo,
+            'status' => $user->status,
+            'synchronized' => $user->synchronized ?? true,
+            'last_access_ip' => $user->last_access_ip ?? null,
+            'last_access' => $user->last_access ?? null,
+            'last_connection' => $user->last_connection ?? null,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+        ];
+    }
+
 }
