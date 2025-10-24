@@ -110,4 +110,47 @@ class User extends Authenticatable
     {
         return $this->teacherProfile()->exists();
     }
+
+    /**
+     * Respuestas de encuestas del usuario
+     */
+    public function surveyResponses()
+    {
+        return $this->hasMany(SurveyResponse::class, 'respondent_user_id');
+    }
+
+    /**
+     * Encuestas creadas por el usuario (admin)
+     */
+    public function createdSurveys()
+    {
+        return $this->hasMany(Survey::class, 'created_by_user_id');
+    }
+
+    /**
+     * Verificar si el usuario es administrador
+     */
+    public function isAdmin()
+    {
+        $roles = $this->role ?? [];
+        return in_array('admin', $roles) || in_array('administrador', $roles);
+    }
+
+    /**
+     * Verificar si el usuario tiene un rol específico
+     */
+    public function hasRole($role)
+    {
+        $roles = $this->role ?? [];
+        return in_array($role, $roles);
+    }
+
+    /**
+     * Verificar si el usuario tiene alguno de los roles especificados
+     */
+    public function hasAnyRole(array $roles)
+    {
+        $userRoles = $this->role ?? [];
+        return count(array_intersect($userRoles, $roles)) > 0;
+    }
 }

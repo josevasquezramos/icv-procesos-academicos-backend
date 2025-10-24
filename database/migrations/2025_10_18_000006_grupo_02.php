@@ -216,7 +216,7 @@ return new class extends Migration {
             $table->string('status', 20)->default('open');
             $table->timestamps();
         });
-
+   
         DB::statement("ALTER TABLE teacher_offers ADD CONSTRAINT teacher_offers_status_check CHECK (status IN ('open', 'closed'))");
 
         Schema::create('teacher_applications', function (Blueprint $table) {
@@ -249,6 +249,24 @@ return new class extends Migration {
 
         DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_status_check CHECK (status IN ('pending', 'accepted', 'rejected'))");
         DB::statement("ALTER TABLE teacher_applications ADD CONSTRAINT teacher_applications_experience_years_check CHECK (experience_years >= 0)");
+
+         Schema::create('employment_profiles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('employment_status', 50); // empleado, independiente, emprendedor, buscando, estudiando, otro
+            $table->string('company_name')->nullable();
+            $table->string('position')->nullable();
+            $table->date('start_date')->nullable();
+            $table->string('salary_range', 50)->nullable(); // menos-1000, 1000-2000, etc.
+            $table->string('industry', 100)->nullable(); // tecnologia, educacion, etc.
+            $table->boolean('is_related_to_studies')->default(false);
+            $table->timestamps();
+
+            $table->index('user_id');
+            $table->index('employment_status');
+            $table->index('industry');
+        });
+        
     }
 
     /**
@@ -272,5 +290,6 @@ return new class extends Migration {
         Schema::dropIfExists('student_profiles');
         Schema::dropIfExists('teacher_profiles');
         Schema::dropIfExists('class_materials');
+        Schema::dropIfExists('employment_profiles');
     }
 };

@@ -22,6 +22,9 @@ use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ClassMaterialController;
+use App\Http\Controllers\Api\SurveyController;
+use App\Http\Controllers\Api\EmploymentProfileController;
+use App\Http\Controllers\Api\GraduateStatisticsController;
 
 
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -61,4 +64,32 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('classes/{classId}/materials', [ClassMaterialController::class, 'getByClass']);
 
     Route::get('/profile', [ProfileController::class, 'show']);
+
+
+    // Employment Profiles (Perfil Laboral)
+    Route::prefix('employment-profile')->group(function () {
+        Route::get('/', [EmploymentProfileController::class, 'show']);
+        Route::post('/', [EmploymentProfileController::class, 'store']);
+        Route::delete('/', [EmploymentProfileController::class, 'destroy']);
+    });
+
+    // Surveys (Encuestas)
+    Route::prefix('surveys')->group(function () {
+        // Rutas para usuarios (egresados)
+        Route::get('/', [SurveyController::class, 'index']); // Listar encuestas disponibles
+        Route::get('/{id}', [SurveyController::class, 'show']); // Ver detalle de encuesta
+        Route::post('/{id}/response', [SurveyController::class, 'submitResponse']); // Enviar respuestas
+        Route::get('/surveys/{id}/responses', [SurveyController::class, 'getUserResponses']);
+        
+        // Rutas para administradores
+        Route::post('/', [SurveyController::class, 'store']); // Crear encuesta
+        Route::put('/{id}', [SurveyController::class, 'update']); // Actualizar encuesta
+        Route::delete('/{id}', [SurveyController::class, 'destroy']); // Eliminar encuesta
+    });
+
+    // Graduate Statistics (Estadísticas - Solo Admin)
+    Route::prefix('graduate-statistics')->group(function () {
+        Route::get('/', [GraduateStatisticsController::class, 'index']);
+        Route::get('/export', [GraduateStatisticsController::class, 'exportReport']);
+    });
 });

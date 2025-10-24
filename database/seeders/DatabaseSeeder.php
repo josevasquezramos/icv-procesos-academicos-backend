@@ -18,6 +18,9 @@ use App\Models\ProgramCourse;
 use App\Models\TeacherProfile;
 use App\Models\Credential;
 use App\Models\ClassMaterial;
+use App\Models\Survey;
+use App\Models\SurveyQuestion;
+use App\Models\EmploymentProfile;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -654,6 +657,80 @@ class DatabaseSeeder extends Seeder
         'type' => 'Presentación',
         ]);
 
+        // Buscar un usuario admin (role es un array JSON)
+        $adminUser = User::whereJsonContains('role', 'admin')
+            ->orWhereJsonContains('role', 'administrador')
+            ->first();
+        
+        // Si no hay admin, usar el primer usuario
+        if (!$adminUser) {
+            $adminUser = User::first();
+        }
+
+        // Crear una encuesta de ejemplo
+        $survey = Survey::create([
+            'title' => 'Encuesta de Satisfacción del Programa',
+            'target_type' => 'graduates',
+            'created_by_user_id' => $adminUser?->id,
+        ]);
+
+        // Crear preguntas para la encuesta
+        $questions = [
+            [
+                'question_text' => '¿Cómo calificarías la calidad general del programa?',
+                'question_type' => 'rating',
+            ],
+            [
+                'question_text' => '¿Los contenidos del curso fueron relevantes para tu desarrollo profesional?',
+                'question_type' => 'text',
+            ],
+            [
+                'question_text' => '¿Recomendarías este programa a otros profesionales?',
+                'question_type' => 'multiple_choice',
+            ],
+            [
+                'question_text' => '¿Qué aspectos del programa te parecieron más valiosos?',
+                'question_type' => 'text',
+            ],
+        ];
+
+        foreach ($questions as $questionData) {
+            SurveyQuestion::create([
+                'survey_id' => $survey->id,
+                'question_text' => $questionData['question_text'],
+                'question_type' => $questionData['question_type'],
+            ]);
+        }
+
+        // Crear perfiles laborales de ejemplo para usuarios existentes
+        // Como role es array, buscamos usuarios que tengan 'student' o 'estudiante' en su role
+        $users = User::whereJsonContains('role', 'student')
+            ->orWhereJsonContains('role', 'estudiante')
+            ->take(10)
+            ->get();
+        
+        // Si no hay usuarios con ese role, tomar los primeros 10
+        if ($users->isEmpty()) {
+            $users = User::take(10)->get();
+        }
+        
+        $employmentStatuses = ['empleado', 'independiente', 'emprendedor', 'buscando', 'estudiando'];
+        $industries = ['tecnologia', 'educacion', 'salud', 'finanzas', 'retail'];
+        $salaryRanges = ['1000-2000', '2000-3000', '3000-5000', '5000-8000'];
+        
+        foreach ($users as $user) {
+            EmploymentProfile::create([
+                'user_id' => $user->id,
+                'employment_status' => $employmentStatuses[array_rand($employmentStatuses)],
+                'company_name' => 'Empresa ' . fake()->company(),
+                'position' => fake()->jobTitle(),
+                'start_date' => fake()->dateTimeBetween('-2 years', 'now'),
+                'salary_range' => $salaryRanges[array_rand($salaryRanges)],
+                'industry' => $industries[array_rand($industries)],
+                'is_related_to_studies' => fake()->boolean(75), // 75% trabajan en área relacionada
+            ]);
+        }
+
         $this->command->info('✅ Seeder ejecutado exitosamente!');
         $this->command->info('📊 Registros creados:');
         $this->command->info('   - Usuarios: ' . User::count());
@@ -671,5 +748,6 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Program-Courses: ' . ProgramCourse::count());
         $this->command->info('   - Class-Material: ' . ClassMaterial::count());
         $this->command->info('   - Requisitos Previos: ' . CoursePreviousRequirement::count());
+        $this->command->info('✅ Módulo de Egresados: Encuesta y perfiles laborales creados exitosamente');
     }
 }
