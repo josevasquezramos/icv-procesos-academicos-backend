@@ -1,8 +1,8 @@
 FROM php:8.2-fpm-alpine
 
-RUN apk add --no-cache nginx wget postgresql-dev git unzip libzip-dev zip \
+RUN apk add --no-cache --update nginx wget postgresql-dev git unzip libzip-dev zip \
     freetype-dev libjpeg-turbo-dev libpng-dev \
-    imagemagick imagemagick-dev build-base autoconf
+    imagemagick build-base autoconf
 
 RUN mkdir -p /run/nginx
 
