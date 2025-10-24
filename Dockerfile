@@ -11,7 +11,7 @@ RUN apk add --no-cache --update \
     libpng \
     imagemagick
 
-RUN apk add --no-cache --virtual .build-deps \
+RUN apk add --no-cache --update --virtual .build-deps \
     build-base \
     autoconf \
     postgresql-dev \
@@ -19,6 +19,7 @@ RUN apk add --no-cache --virtual .build-deps \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
+    imagemagick-dev
   
   && docker-php-ext-configure zip \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
