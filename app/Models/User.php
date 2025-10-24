@@ -73,6 +73,17 @@ class User extends Authenticatable
 }
 
 
+ public function student()
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
+
+    public function instructor()
+    {
+        return $this->hasOne(Instructor::class, 'user_id');
+    }
+
+
     public function groupParticipants()
 {
     return $this->hasMany(GroupParticipant::class, 'user_id');
@@ -110,4 +121,43 @@ class User extends Authenticatable
     {
         return $this->teacherProfile()->exists();
     }
+
+    // Métodos de utilidad
+    public function isStudent()
+    {
+        return in_array('student', $this->role ?? []);
+    }
+
+    public function isAdmin()
+    {
+        return in_array('admin', $this->role ?? []);
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->full_name ?? "{$this->first_name} {$this->last_name}";
+    }
+
+
+      // Scopes para diferentes roles
+    public function scopeStudents($query)
+    {
+        return $query->whereJsonContains('role', 'student');
+    }
+
+    public function scopeTeachers($query)
+    {
+        return $query->whereJsonContains('role', 'teacher');
+    }
+
+    public function scopeAdmins($query)
+    {
+        return $query->whereJsonContains('role', 'admin');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
 }
+

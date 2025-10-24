@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
@@ -40,8 +41,36 @@ class Course extends Model
         'status' => 'boolean',
         'level' => 'string',
     ];
-    
-// Relaciones
+
+    // Scope para cursos pendientes de aprobación
+    public function scopePendingApproval($query)
+    {
+        return $query->where('status', false);
+    }
+
+    public function scopeApproved($query)
+    {
+        return $query->where('status', true);
+    }
+
+
+
+    // Relaciones
+
+    public function categories()
+    {
+        return $this->hasMany(CourseCategory::class, 'course_id');
+    }
+
+    public function instructors()
+    {
+        return $this->hasMany(CourseInstructor::class, 'course_id');
+    }
+
+    public function contents()
+    {
+        return $this->hasMany(CourseContent::class, 'course_id');
+    }
     public function programs()
     {
         return $this->belongsToMany(Program::class, 'program_courses')

@@ -22,12 +22,36 @@ use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ClassMaterialController;
-
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminStudentController;
+use App\Http\Controllers\AdminTeacherController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminCourseController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
+   // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    
+    // Estudiantes
+    Route::apiResource('/students', AdminStudentController::class);
+    
+    // Docentes
+    Route::apiResource('/teachers', AdminTeacherController::class);
+    
+    // Administradores
+    Route::apiResource('/admins', AdminUserController::class);
+    
+    // Cursos pendientes
+    Route::get('/pending-courses', [AdminCourseController::class, 'pendingCourses']);
+    Route::post('/courses/{id}/approve', [AdminCourseController::class, 'approveCourse']);
+    Route::post('/courses/{id}/reject', [AdminCourseController::class, 'rejectCourse']);
+    Route::post('/courses/bulk-approve', [AdminCourseController::class, 'bulkApprove']);
+
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/user', fn(Request $request) => $request->user());
