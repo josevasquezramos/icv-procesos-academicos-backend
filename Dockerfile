@@ -1,7 +1,6 @@
 FROM php:8.2-fpm-alpine
 
 # 1. Instala solo las dependencias de *runtime* (las que la app necesita para correr)
-# Se añade --update para refrescar los repositorios de paquetes
 RUN apk add --no-cache --update \
     nginx \
     git \
@@ -13,7 +12,7 @@ RUN apk add --no-cache --update \
     libpng \
     imagemagick
 
-# 2. Instala dependencias de *compilación* (--virtual), compila las extensiones y borra las dependencias
+# 2. Instala dependencias de compilación, compila extensiones y limpia (TODO EN UN SOLO RUN)
 RUN apk add --no-cache --update --virtual .build-deps \
     build-base \
     autoconf \
@@ -22,17 +21,17 @@ RUN apk add --no-cache --update --virtual .build-deps \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
-    imagemagick-dev  # <--- ¡ESTA ES LA LÍNEA CLAVE QUE FALTABA!
-  
-  # 3. Configura e instala extensiones PHP (incluyendo imagick)
+    imagemagick-dev \
+  # Continúa el MISMO comando RUN
   && docker-php-ext-configure zip \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) pdo pdo_pgsql zip gd \
   && pecl install imagick \
   && docker-php-ext-enable imagick \
-
-  # 4. Limpia todo (borra el paquete virtual .build-deps)
+  # Limpia las dependencias de compilación al final del MISMO RUN
   && apk del .build-deps
+
+# --- El resto de tu archivo (está perfecto) ---
 
 RUN mkdir -p /run/nginx
 
