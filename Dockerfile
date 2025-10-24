@@ -1,7 +1,8 @@
 FROM php:8.2-fpm-alpine
 
 RUN apk add --no-cache nginx wget postgresql-dev git unzip libzip-dev zip \
-    freetype-dev libjpeg-turbo-dev libpng-dev
+    freetype-dev libjpeg-turbo-dev libpng-dev \
+    imagemagick imagemagick-dev build-base autoconf
 
 RUN mkdir -p /run/nginx
 
@@ -12,10 +13,12 @@ WORKDIR /app
 COPY . /app
 
 RUN docker-php-ext-install pdo pdo_pgsql \
- && docker-php-ext-configure zip \
- && docker-php-ext-install zip \
- && docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install gd
+ && docker-php-ext-configure zip \
+ && docker-php-ext-install zip \
+ && docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install gd \
+ && pecl install imagick \
+ && docker-php-ext-enable imagick
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
