@@ -179,7 +179,13 @@ class GroupController extends Controller
                     $query->where('user_id', $userId)
                         ->where('role', 'student');
                 })
-                ->with(['course', 'participants.user'])
+                ->with([
+                    'course',
+                    'participants.user',
+                    'credentials' => function ($query) use ($userId) {
+                        $query->where('user_id', $userId);
+                    }
+                ])
                 ->get();
 
             if ($groups->isEmpty()) {
