@@ -22,6 +22,11 @@ use App\Http\Controllers\Api\TeacherProfileController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\ClassMaterialController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminStudentController;
+use App\Http\Controllers\AdminTeacherController;
+use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminCourseController;
 use App\Http\Controllers\Api\SurveyController;
 use App\Http\Controllers\Api\EmploymentProfileController;
 use App\Http\Controllers\Api\GraduateStatisticsController;
@@ -31,6 +36,26 @@ Route::post('/auth/login', [AuthController::class, 'login']);
 Route::post('/auth/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
+   // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'dashboard']);
+    
+    // Estudiantes
+    Route::apiResource('/students', AdminStudentController::class);
+    
+    // Docentes
+    Route::apiResource('/teachers', AdminTeacherController::class);
+    
+    // Administradores
+    Route::apiResource('/admins', AdminUserController::class);
+    
+    // Cursos pendientes
+    Route::get('/pending-courses', [AdminCourseController::class, 'pendingCourses']);
+    Route::post('/courses/{id}/approve', [AdminCourseController::class, 'approveCourse']);
+    Route::post('/courses/{id}/reject', [AdminCourseController::class, 'rejectCourse']);
+    Route::post('/courses/bulk-approve', [AdminCourseController::class, 'bulkApprove']);
+
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::get('/user', fn(Request $request) => $request->user());
@@ -42,18 +67,20 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('groups/{group}/complete', CompleteGroupController::class)->name('groups.complete');
     Route::get('credentials/{credential}/pdf', CredentialPdfController::class)->name('credentials.pdf');
     Route::post('/groups/{id}/join', [GroupController::class, 'joinGroup']);
+    Route::get('/groups/completed/{userId}', [GroupController::class, 'getCompletedGroupsByStudent']);
 
     // CRUD Resources
     Route::apiResource('academic-settings', AcademicSettingController::class);
     Route::apiResource('attendances', AttendanceController::class);
     Route::apiResource('classes', ClassesController::class);
     Route::get('classes/group/{groupId}', [ClassesController::class, 'getByGroup']);
-    //Route::patch('/classes/{class}/materials/{material}/visibility', [ClassMaterialsController::class, 'toggleVisibility']);
     Route::apiResource('course-previous-requirements', CoursePreviousRequirementController::class);
     Route::apiResource('credentials', CredentialController::class);
     Route::apiResource('evaluations', EvaluationController::class);
+    Route::get('evaluations/group/{groupId}', [EvaluationController::class, 'getByGroup']);
     Route::apiResource('final-grades', FinalGradeController::class);
     Route::apiResource('grade-records', GradeRecordController::class);
+    Route::get('grade-records/group/{groupId}', [GradeRecordController::class, 'getByGroup']);
     Route::apiResource('group-participants', GroupParticipantController::class);
     Route::apiResource('programs', ProgramController::class);
     Route::apiResource('program-courses', ProgramCourseController::class);

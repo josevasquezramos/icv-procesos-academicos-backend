@@ -27,7 +27,6 @@ class CredentialController extends Controller
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'group_id' => 'required|exists:groups,id',
-            'type' => 'required|in:certificate,diploma',
             'issue_date' => 'required|date',
         ]);
 
@@ -58,7 +57,6 @@ class CredentialController extends Controller
         $validated = $request->validate([
             'user_id' => 'sometimes|required|exists:users,id',
             'group_id' => 'sometimes|required|exists:groups,id',
-            'type' => 'sometimes|required|in:certificate,diploma',
             'issue_date' => 'sometimes|required|date',
         ]);
 

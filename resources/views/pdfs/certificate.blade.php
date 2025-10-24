@@ -253,7 +253,7 @@
                         <tr>
                             <td>{{ $evaluation['title'] }}</td>
                             <td>{{ $evaluation['type'] }}</td>
-                            <td>{{ $evaluation['weight'] }}%</td>
+                            <td>{{ $evaluation['weight'] }}</td>
                             <td>{{ number_format($evaluation['obtained_grade'], 2) }}/{{ $baseGrade }}</td>
                         </tr>
                         @endforeach

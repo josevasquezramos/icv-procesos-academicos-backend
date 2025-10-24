@@ -23,7 +23,7 @@ class SocialiteController extends Controller
                 ->stateless()
                 ->redirect()
                 ->getTargetUrl();
-            
+
             return response()->json([
                 'redirect_url' => $redirectUrl,
             ]);
@@ -66,14 +66,14 @@ class SocialiteController extends Controller
                     'email' => $googleUser->getEmail(),
                     'profile_photo' => $googleUser->getAvatar(),
                     'email_verified_at' => now(),
-                    'password' => Hash::make(Str::random(24)), 
+                    'password' => Hash::make(Str::random(24)),
                     'status' => 'active',
                 ]);
             }
 
             $token = $user->createToken('auth_token_google')->plainTextToken;
 
-            return response()->json([
+           /*  return response()->json([
                 'message' => 'Autenticación con Google exitosa',
                 'user' => [
                     'id' => $user->id,
@@ -83,7 +83,34 @@ class SocialiteController extends Controller
                 ],
                 'token' => $token,
                 'token_type' => 'Bearer',
-            ], 200);
+            ], 200); */
+
+            // Guardar token en sesión o en cookie
+             $responseData = [
+                'message' => 'Inicio de sesión exitoso',
+                'user' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'email' => $user->email,
+                    'profile_photo' => $user->profile_photo,
+                    'role' => 'student',
+                ],
+                'token' => $token,
+                'token_type' => 'Bearer'
+            ];
+
+            // Guardamos el JSON como string en una cookie
+            setcookie(
+                'auth_data',
+                json_encode($responseData),
+                time() + 60*60*24,
+                '/',
+                '',
+                false,
+                false
+            );
+
+            return redirect('https://instituto.cetivirgendelapuerta.com/academico/dashboard');
 
         } catch (Exception $e) {
             // Registramos el error completo en los logs de Laravel

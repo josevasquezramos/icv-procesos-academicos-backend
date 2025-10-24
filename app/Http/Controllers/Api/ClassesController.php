@@ -62,21 +62,7 @@ class ClassesController extends Controller
             'count' => $classes->count(),
         ], 200);
     }
-
-
-    public function toggleVisibility(Request $request, string $classId, string $materialId): JsonResponse
-    {
-        $material = Classes::where('class_id', $classId)
-            ->findOrFail($materialId);
-
-        $validated = $request->validate([
-            'visibility' => 'required|string|in:public,private'
-        ]);
-
-        $material->update(['visibility' => $validated['visibility']]);
-
-        return response()->json($material);
-    }
+    
     /**
      * Update the specified resource in storage.
      */

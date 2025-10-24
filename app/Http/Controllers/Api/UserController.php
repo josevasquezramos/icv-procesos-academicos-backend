@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index(): JsonResponse
     {
-        $users = User::with(['teacherProfile', 'groupParticipations', 'credentials'])->get();
+        $users = User::with(['teacherProfile', 'groupParticipants', 'credentials'])->get();
         return response()->json($users);
     }
 
@@ -64,12 +64,12 @@ class UserController extends Controller
     {
         $user = User::with([
             'teacherProfile',
-            'groupParticipations.group',
+            'groupParticipants.group',
             'credentials',
             'finalGrades',
             'gradeRecords'
         ])->findOrFail($id);
-        
+
         return response()->json($user);
     }
 

@@ -14,7 +14,6 @@ class Credential extends Model
         'user_id',
         'uuid',
         'group_id',
-        'type',
         'issue_date',
     ];
 
@@ -23,24 +22,13 @@ class Credential extends Model
     ];
 
     // Relaciones
-   public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
-
-public function group()
-{
-    return $this->belongsTo(Group::class, 'group_id');
-}
-
-    // Scopes
-    public function scopeCertificates($query)
+    public function user()
     {
-        return $query->where('type', 'certificate');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function scopeDiplomas($query)
+    public function group()
     {
-        return $query->where('type', 'diploma');
+        return $this->belongsTo(Group::class, 'group_id');
     }
 }
