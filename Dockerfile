@@ -20,7 +20,6 @@ RUN apk add --no-cache --update --virtual .build-deps \
     libjpeg-turbo-dev \
     libpng-dev \
     imagemagick-dev \
-  # Continúa el MISMO comando RUN
   && docker-php-ext-configure zip \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) pdo pdo_pgsql zip gd \
