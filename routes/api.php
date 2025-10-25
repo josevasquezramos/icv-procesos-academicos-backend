@@ -40,16 +40,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
    // Dashboard
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
-    
+
     // Estudiantes
     Route::apiResource('/students', AdminStudentController::class);
-    
+
     // Docentes
     Route::apiResource('/teachers', AdminTeacherController::class);
-    
+
     // Administradores
     Route::apiResource('/admins', AdminUserController::class);
-    
+
     // Cursos pendientes
     Route::get('/pending-courses', [AdminCourseController::class, 'pendingCourses']);
     Route::post('/courses/{id}/approve', [AdminCourseController::class, 'approveCourse']);
@@ -107,7 +107,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/{id}', [SurveyController::class, 'show']); // Ver detalle de encuesta
         Route::post('/{id}/response', [SurveyController::class, 'submitResponse']); // Enviar respuestas
         Route::get('/surveys/{id}/responses', [SurveyController::class, 'getUserResponses']);
-        
+
         // Rutas para administradores
         Route::post('/', [SurveyController::class, 'store']); // Crear encuesta
         Route::put('/{id}', [SurveyController::class, 'update']); // Actualizar encuesta
@@ -119,4 +119,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [GraduateStatisticsController::class, 'index']);
         Route::get('/export', [GraduateStatisticsController::class, 'exportReport']);
     });
+
+    Route::get('/group-participants/student/{userId}', [GroupParticipantController::class, 'getGroupsByStudent']);
+    Route::get('/group-participants/teacher/{userId}', [GroupParticipantController::class, 'getGroupsByTeacher']);
+    Route::get('/group-participants/group/{groupId}/students', [GroupParticipantController::class, 'getStudentsByGroup']);
+    Route::get('/attendances/class/{classId}', [AttendanceController::class, 'getByClass']);
+    Route::get('/attendances/student/{userId}/group/{groupId}', [AttendanceController::class, 'getStudentAttendances']);
+    Route::get('/attendances/class/{classId}', [AttendanceController::class, 'getAttendancesByClass']);
+
 });

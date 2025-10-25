@@ -87,4 +87,35 @@ class GroupParticipantController extends Controller
 
         return response()->json(['message' => 'Group participant deleted successfully'], 200);
     }
+
+    public function getGroupsByStudent($userId)
+    {
+        $groups = GroupParticipant::with('group')
+            ->where('user_id', $userId)
+            ->where('role', 'student')
+            ->get();
+
+        return response()->json($groups);
+    }
+
+    public function getGroupsByTeacher($userId)
+    {
+        $groups = GroupParticipant::with('group')
+            ->where('user_id', $userId)
+            ->where('role', 'teacher')
+            ->get();
+
+        return response()->json($groups);
+    }
+
+    public function getStudentsByGroup($groupId)
+    {
+        $students = GroupParticipant::with('user')
+            ->where('group_id', $groupId)
+            ->where('role', 'student')
+            ->get();
+
+        return response()->json($students);
+    }
+
 }
