@@ -1,5 +1,6 @@
 FROM php:8.2-fpm-alpine
 
+# 1. Instala solo las dependencias de *runtime* (las que la app necesita para correr)
 RUN apk add --no-cache --update \
     nginx \
     git \
@@ -11,6 +12,7 @@ RUN apk add --no-cache --update \
     libpng \
     imagemagick
 
+# 2. Instala dependencias de compilación, compila extensiones y limpia (TODO EN UN SOLO RUN)
 RUN apk add --no-cache --update --virtual .build-deps \
     build-base \
     autoconf \
@@ -20,6 +22,7 @@ RUN apk add --no-cache --update --virtual .build-deps \
     libjpeg-turbo-dev \
     libpng-dev \
     imagemagick-dev \
+  # Continúa el MISMO comando RUN
   && docker-php-ext-configure zip \
   && docker-php-ext-configure gd --with-freetype --with-jpeg \
   && docker-php-ext-install -j$(nproc) pdo pdo_pgsql zip gd \
