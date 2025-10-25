@@ -11,7 +11,6 @@ RUN apk add --no-cache --update \
     libpng \
     imagemagick
 
-# 2. Instala dependencias de compilación, compila extensiones y limpia (TODO EN UN SOLO RUN)
 RUN apk add --no-cache --update --virtual .build-deps \
     build-base \
     autoconf \
