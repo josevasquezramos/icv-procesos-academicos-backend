@@ -1,6 +1,5 @@
 FROM php:8.2-fpm-alpine
 
-# 1. Instala solo las dependencias de *runtime* (las que la app necesita para correr)
 RUN apk add --no-cache --update \
     nginx \
     git \
