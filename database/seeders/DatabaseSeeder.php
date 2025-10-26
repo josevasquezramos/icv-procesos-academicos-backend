@@ -451,12 +451,27 @@ class DatabaseSeeder extends Seeder
 
         // Profesores y Alumnos
         $participants_DB_A_teachers = [
-            GroupParticipant::create(['group_id' => $group_DB_A->id, 'user_id' => $teacherHugo->id, 'role' => 'teacher']),
-            GroupParticipant::create(['group_id' => $group_DB_A->id, 'user_id' => $teacherJohan->id, 'role' => 'teacher']),
+            GroupParticipant::create([
+                'group_id' => $group_DB_A->id,
+                'user_id' => $teacherHugo->id,
+                'role' => 'teacher',
+                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+            ]),
+            GroupParticipant::create([
+                'group_id' => $group_DB_A->id,
+                'user_id' => $teacherJohan->id,
+                'role' => 'teacher',
+                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+            ]),
         ];
         $participants_DB_A_students = [];
         foreach ($studentsHalf1 as $student) {
-            $participants_DB_A_students[] = GroupParticipant::create(['group_id' => $group_DB_A->id, 'user_id' => $student->id, 'role' => 'student']);
+            $participants_DB_A_students[] = GroupParticipant::create([
+                'group_id' => $group_DB_A->id,
+                'user_id' => $student->id,
+                'role' => 'student',
+                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+            ]);
         }
 
         // Clases (3)
@@ -532,10 +547,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Profesores y Alumnos
-        GroupParticipant::create(['group_id' => $group_DB_B->id, 'user_id' => $teacherJohan->id, 'role' => 'teacher']);
+        GroupParticipant::create([
+            'group_id' => $group_DB_B->id,
+            'user_id' => $teacherJohan->id,
+            'role' => 'teacher',
+            'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+        ]);
         $participants_DB_B_students = [];
         foreach ($studentsHalf2 as $student) {
-            $participants_DB_B_students[] = GroupParticipant::create(['group_id' => $group_DB_B->id, 'user_id' => $student->id, 'role' => 'student']);
+            $participants_DB_B_students[] = GroupParticipant::create([
+                'group_id' => $group_DB_B->id,
+                'user_id' => $student->id,
+                'role' => 'student',
+                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+            ]);
         }
 
         // Clases (3)
@@ -790,7 +815,7 @@ class DatabaseSeeder extends Seeder
         $adminUser = User::whereJsonContains('role', 'admin')
             ->orWhereJsonContains('role', 'administrador')
             ->first();
-        
+
         // Si no hay admin, usar el primer usuario
         if (!$adminUser) {
             $adminUser = User::first();
@@ -837,16 +862,16 @@ class DatabaseSeeder extends Seeder
             ->orWhereJsonContains('role', 'estudiante')
             ->take(10)
             ->get();
-        
+
         // Si no hay usuarios con ese role, tomar los primeros 10
         if ($users->isEmpty()) {
             $users = User::take(10)->get();
         }
-        
+
         $employmentStatuses = ['empleado', 'independiente', 'emprendedor', 'buscando', 'estudiando'];
         $industries = ['tecnologia', 'educacion', 'salud', 'finanzas', 'retail'];
         $salaryRanges = ['1000-2000', '2000-3000', '3000-5000', '5000-8000'];
-        
+
         foreach ($users as $user) {
             EmploymentProfile::create([
                 'user_id' => $user->id,
@@ -884,7 +909,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('   - Program-Courses: ' . ProgramCourse::count());
         $this->command->info('   - Class-Material: ' . ClassMaterial::count());
         $this->command->info('   - Requisitos Previos: ' . CoursePreviousRequirement::count());
-         $this->command->info('✅ Módulo de Egresados: Encuesta y perfiles laborales creados exitosamente');
+        $this->command->info('✅ Módulo de Egresados: Encuesta y perfiles laborales creados exitosamente');
 
     }
 }
