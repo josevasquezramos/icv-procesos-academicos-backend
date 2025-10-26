@@ -42,7 +42,7 @@ class RandalSeeder extends Seeder
         DB::table('positions')->truncate();
         DB::table('departments')->truncate();
         DB::table('vocational_questionnaires')->truncate();
-        DB::table('attention_students_request_types')->truncate();
+        DB::table('attention_students_Request_Types')->truncate();
         
         // NOTA: 'users' y 'courses' NO se tocan, tal como pediste.
 
@@ -487,9 +487,9 @@ class RandalSeeder extends Seeder
         ];
         $createdTypes = [];
         foreach ($types as $index => $type) {
-            // $existing = DB::table('attention_students_request_types')->where('name_type', $type['name_type'])->first(); // Tabla vacía
+            // $existing = DB::table('attention_students_Request_Types')->where('name_type', $type['name_type'])->first(); // Tabla vacía
             // if (!$existing) {
-                $id = DB::table('attention_students_request_types')->insertGetId(['id_type' => $index + 1, 'name_type' => $type['name_type'], 'description' => $type['description']]);
+                $id = DB::table('attention_students_Request_Types')->insertGetId(['id_type' => $index + 1, 'name_type' => $type['name_type'], 'description' => $type['description']]);
                 $createdTypes[] = (object)['id' => $id, 'id_type' => $index + 1, 'name_type' => $type['name_type']];
             // } else { $createdTypes[] = $existing; }
         }
