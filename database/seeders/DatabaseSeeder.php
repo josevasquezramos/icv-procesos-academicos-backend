@@ -23,6 +23,7 @@ use App\Models\SurveyQuestion;
 use App\Models\EmploymentProfile;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,46 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // --- INICIO: BLOQUE DE LIMPIEZA DEFINITIVO ---
+
+        $this->command->info('Deshabilitando llaves foráneas...');
+        Schema::disableForeignKeyConstraints();
+
+        $this->command->info('Vaciando todas las tablas (TRUNCATE)...');
+
+        // Usamos TRUNCATE para vaciar y resetear los IDs auto-incrementales.
+        // El orden es de "hijos" a "padres" para mayor seguridad.
+
+        // Tablas "nietas" (dependen de otras)
+        DB::table('class_materials')->truncate();
+        DB::table('attendances')->truncate();
+        DB::table('grade_records')->truncate();
+        DB::table('survey_questions')->truncate();
+
+        // Tablas "hijas"
+        DB::table('teacher_profiles')->truncate();
+        DB::table('employment_profiles')->truncate();
+        DB::table('program_course')->truncate();
+        DB::table('course_previous_requirements')->truncate();
+        DB::table('evaluations')->truncate();
+        DB::table('classes')->truncate();
+        DB::table('group_participants')->truncate();
+        DB::table('final_grades')->truncate();
+        DB::table('credentials')->truncate();
+
+        // Tablas "padre"
+        DB::table('academic_settings')->truncate();
+        DB::table('groups')->truncate();
+        DB::table('courses')->truncate();
+        DB::table('programs')->truncate();
+        DB::table('surveys')->truncate();
+        DB::table('users')->truncate(); // Esta es la que daba el error
+
+        $this->command->info('Tablas vaciadas. Reactivando llaves foráneas...');
+        Schema::enableForeignKeyConstraints();
+
+        // --- FIN: BLOQUE DE LIMPIEZA ---
+
         // -----------------------------------------------------------------
         // 0. CONFIGURACIÓN ACADÉMICA
         // -----------------------------------------------------------------
