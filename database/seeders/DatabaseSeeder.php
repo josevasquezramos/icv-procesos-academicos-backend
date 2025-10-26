@@ -496,13 +496,13 @@ class DatabaseSeeder extends Seeder
                 'group_id' => $group_DB_A->id,
                 'user_id' => $teacherHugo->id,
                 'role' => 'teacher',
-                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+                'enrollment_status' => 'finished' // <-- AÑADE ESTE CAMPO
             ]),
             GroupParticipant::create([
                 'group_id' => $group_DB_A->id,
                 'user_id' => $teacherJohan->id,
                 'role' => 'teacher',
-                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+                'enrollment_status' => 'finished' // <-- AÑADE ESTE CAMPO
             ]),
         ];
         $participants_DB_A_students = [];
@@ -511,7 +511,7 @@ class DatabaseSeeder extends Seeder
                 'group_id' => $group_DB_A->id,
                 'user_id' => $student->id,
                 'role' => 'student',
-                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+                'enrollment_status' => 'finished' // <-- AÑADE ESTE CAMPO
             ]);
         }
 
@@ -592,7 +592,7 @@ class DatabaseSeeder extends Seeder
             'group_id' => $group_DB_B->id,
             'user_id' => $teacherJohan->id,
             'role' => 'teacher',
-            'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+            'enrollment_status' => 'finished' // <-- AÑADE ESTE CAMPO
         ]);
         $participants_DB_B_students = [];
         foreach ($studentsHalf2 as $student) {
@@ -600,7 +600,7 @@ class DatabaseSeeder extends Seeder
                 'group_id' => $group_DB_B->id,
                 'user_id' => $student->id,
                 'role' => 'student',
-                'enrollment_status' => 'active' // <-- AÑADE ESTE CAMPO
+                'enrollment_status' => 'finished' // <-- AÑADE ESTE CAMPO
             ]);
         }
 
@@ -668,8 +668,8 @@ class DatabaseSeeder extends Seeder
 
 
         // -----------------------------------------------------------------
-        // 6. GRUPOS "IN_PROGRESS"
-        // -----------------------------------------------------------------
+// 6. GRUPOS "IN_PROGRESS"
+// -----------------------------------------------------------------
         $this->command->info('Creando grupos IN_PROGRESS (Móviles A, B y Data Center A)...');
 
         // --- GRUPO: APLICACIONES MOVILES - GRUPO 2025 A ---
@@ -683,10 +683,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Profesores y Alumnos
-        GroupParticipant::create(['group_id' => $group_MOV_A->id, 'user_id' => $teacherMirko->id, 'role' => 'teacher']);
+        GroupParticipant::create([
+            'group_id' => $group_MOV_A->id,
+            'user_id' => $teacherMirko->id,
+            'role' => 'teacher',
+            'enrollment_status' => 'active' // <-- CORREGIDO
+        ]);
         $participants_MOV_A_students = [];
         foreach ($studentsQuarter1 as $student) {
-            $participants_MOV_A_students[] = GroupParticipant::create(['group_id' => $group_MOV_A->id, 'user_id' => $student->id, 'role' => 'student']);
+            $participants_MOV_A_students[] = GroupParticipant::create([
+                'group_id' => $group_MOV_A->id,
+                'user_id' => $student->id,
+                'role' => 'student',
+                'enrollment_status' => 'active' // <-- CORREGIDO
+            ]);
         }
 
         // Clases (3)
@@ -737,11 +747,26 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Profesores y Alumnos
-        GroupParticipant::create(['group_id' => $group_MOV_B->id, 'user_id' => $teacherMirko->id, 'role' => 'teacher']);
-        GroupParticipant::create(['group_id' => $group_MOV_B->id, 'user_id' => $teacherJohan->id, 'role' => 'teacher']);
+        GroupParticipant::create([
+            'group_id' => $group_MOV_B->id,
+            'user_id' => $teacherMirko->id,
+            'role' => 'teacher',
+            'enrollment_status' => 'active' // <-- CORREGIDO
+        ]);
+        GroupParticipant::create([
+            'group_id' => $group_MOV_B->id,
+            'user_id' => $teacherJohan->id,
+            'role' => 'teacher',
+            'enrollment_status' => 'active' // <-- CORREGIDO
+        ]);
         $participants_MOV_B_students = [];
         foreach ($studentsQuarter2 as $student) {
-            $participants_MOV_B_students[] = GroupParticipant::create(['group_id' => $group_MOV_B->id, 'user_id' => $student->id, 'role' => 'student']);
+            $participants_MOV_B_students[] = GroupParticipant::create([
+                'group_id' => $group_MOV_B->id,
+                'user_id' => $student->id,
+                'role' => 'student',
+                'enrollment_status' => 'active' // <-- CORREGIDO
+            ]);
         }
 
         // Clases y Evals (similar al anterior)
@@ -784,10 +809,20 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Profesores y Alumnos
-        GroupParticipant::create(['group_id' => $group_DC_A->id, 'user_id' => $teacherGuillermo->id, 'role' => 'teacher']);
+        GroupParticipant::create([
+            'group_id' => $group_DC_A->id,
+            'user_id' => $teacherGuillermo->id,
+            'role' => 'teacher',
+            'enrollment_status' => 'active' // <-- CORREGIDO
+        ]);
         $participants_DC_A_students = [];
         foreach ($studentsLastHalf as $student) {
-            $participants_DC_A_students[] = GroupParticipant::create(['group_id' => $group_DC_A->id, 'user_id' => $student->id, 'role' => 'student']);
+            $participants_DC_A_students[] = GroupParticipant::create([
+                'group_id' => $group_DC_A->id,
+                'user_id' => $student->id,
+                'role' => 'student',
+                'enrollment_status' => 'active' // <-- CORREGIDO
+            ]);
         }
 
         // Clases (3)
