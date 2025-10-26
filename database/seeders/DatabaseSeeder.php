@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
         // Tablas "hijas"
         DB::table('teacher_profiles')->truncate();
         DB::table('employment_profiles')->truncate();
-        DB::table('program_course')->truncate();
+        DB::table('program_courses')->truncate();
         DB::table('course_previous_requirements')->truncate();
         DB::table('evaluations')->truncate();
         DB::table('classes')->truncate();
