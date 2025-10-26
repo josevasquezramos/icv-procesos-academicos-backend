@@ -25,7 +25,7 @@ class RandalSeeder extends Seeder
         // Se respeta tu lista de "no tocar" (ej. users, courses, etc. NO están aquí).
         
         // Tablas "nietas" (las más dependientes primero)
-        DB::table('vocational_response_course')->truncate();
+        DB::table('vocational_response_courses')->truncate();
         DB::table('vocational_responses')->truncate();
         DB::table('vocational_questions')->truncate();
         DB::table('attention_students_requests')->truncate();
@@ -457,7 +457,7 @@ class RandalSeeder extends Seeder
             foreach ($coursesInOrder as $course) {
                 if ($course) {
                     // Usamos 'insert' porque la tabla está vacía
-                    DB::table('vocational_response_course')->insert(
+                    DB::table('vocational_response_courses')->insert(
                         ['response_id' => $responseId, 'course_id' => $course->id, 'rank' => $rank++]
                     );
                 }
