@@ -286,13 +286,20 @@ class PantaSeeder extends Seeder
     private function run_contact_forms(): void
     {
         $this->command->info('--- Ejecutando Contact Forms (Convertido a DB::table) ---');
+        
+        // --- CORRECCIÓN ---
+        // 1. Obtenemos usuarios que SÍ SON EMPLEADOS
+        $user1 = DB::table('users')->where('email', 'ana.lopez@email.com')->first();
+        $user2 = DB::table('users')->where('email', 'pedro.gomez@email.com')->first();
 
-        // Obtenemos usuarios reales para asignar
-        $user1 = DB::table('users')->where('email', 'admin@email.com')->first();
-        $user2 = DB::table('users')->where('email', 'maria.garcia@email.com')->first();
+        // 2. Buscamos el registro de EMPLEADO usando el USER_ID
+        $employee1 = $user1 ? DB::table('employees')->where('user_id', $user1->id)->first() : null;
+        $employee2 = $user2 ? DB::table('employees')->where('user_id', $user2->id)->first() : null;
 
-        $assignee1 = $user1 ? $user1->id : null;
-        $assignee2 = $user2 ? $user2->id : null;
+        // 3. Obtenemos el ID del EMPLEADO (la Primary Key de la tabla employees)
+        $assignee1_id = $employee1 ? $employee1->id : null;
+        $assignee2_id = $employee2 ? $employee2->id : null;
+        // --- FIN CORRECCIÓN ---
 
         $contactForms = [
             [
@@ -317,7 +324,7 @@ class PantaSeeder extends Seeder
                 'message' => 'Necesito una cotización para el desarrollo...',
                 'form_type' => 'quote',
                 'status' => 'in_progress',
-                'assigned_to' => $assignee1, // CORREGIDO: ID real
+                'assigned_to' => $assignee1_id, // CORREGIDO: ID de empleado
                 'submission_date' => now()->subDays(1)
             ],
             [
@@ -330,7 +337,7 @@ class PantaSeeder extends Seeder
                 'message' => 'He completado el curso pero no puedo descargar mi certificado.',
                 'form_type' => 'support',
                 'status' => 'responded',
-                'assigned_to' => $assignee2, // CORREGIDO: ID real
+                'assigned_to' => $assignee2_id, // CORREGIDO: ID de empleado
                 'response' => 'Estimada Laura, hemos verificado tu caso...',
                 'response_date' => now()->subHours(5),
                 'submission_date' => now()->subDays(3)
@@ -365,7 +372,7 @@ class PantaSeeder extends Seeder
         foreach ($contactForms as $contactForm) {
             DB::table('contact_forms')->updateOrInsert(
                 [
-                    'email' => $contactForm['email'],
+                    'email' => $contactForm['email'], 
                     'submission_date' => $contactForm['submission_date']
                 ],
                 $contactForm
