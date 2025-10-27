@@ -24,7 +24,7 @@ class TruncateAllSeeder extends Seeder
         DB::table('documents')->truncate();
         DB::table('documents')->truncate();
         DB::table('document_versions')->truncate();
-        DB::table('document_history')->truncate();
+        // DB::table('document_history')->truncate();
         DB::table('payments')->truncate();
         DB::table('invoices')->truncate();
         DB::table('academic_periods')->truncate();
