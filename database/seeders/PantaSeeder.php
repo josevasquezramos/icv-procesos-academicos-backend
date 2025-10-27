@@ -36,25 +36,25 @@ class PantaSeeder extends Seeder
         $this->run_positions(); // Incluye PositionSeeder y PositionsSeeder
         $this->run_instructors();
         $this->run_employees(); // Incluye EmployeesSeeder (EmployeeSeeder descartado por IDs fijos)
-        
+
         // 3. Tablas académicas
         $this->command->line('--- 3. Tablas Académicas ---');
         $this->run_course_offerings();
         $this->run_course_instructors(); // Nuevo, referencial
         $this->run_groups();
         $this->run_evaluations();
-        
+
         // 4. Tablas de estudiantes
         $this->command->line('--- 4. Tablas de Estudiantes y Matrículas ---');
         $this->run_students();
         $this->run_enrollments();
         $this->run_enrollment_details();
-        
+
         // 5. Tablas de grupos y clases
         $this->command->line('--- 5. Tablas de Grupos y Clases ---');
         $this->run_group_participants();
         $this->run_classes();
-        
+
         // 6. Tablas principales de registros
         $this->command->line('--- 6. Tablas de Registros (Asistencias, Notas, Finanzas) ---');
         $this->run_attendances();
@@ -63,7 +63,7 @@ class PantaSeeder extends Seeder
         $this->run_invoices();
         $this->run_payments();
         $this->run_financial_transactions();
-        
+
         // 7. Tablas de Soporte y Seguridad
         $this->command->line('--- 7. Tablas de Soporte y Seguridad ---');
         $this->run_tickets();
@@ -71,7 +71,7 @@ class PantaSeeder extends Seeder
         $this->run_security_logs();
         $this->run_security_alerts();
         $this->run_incidents();
-        
+
         // 8. Formularios Web
         $this->command->line('--- 8. Formularios Web ---');
         $this->run_contact_forms(); // Convertido a DB::table y referencial
@@ -148,7 +148,7 @@ class PantaSeeder extends Seeder
                 'current_balance' => 0.00,
             ],
         ];
-        
+
         foreach ($accounts as $account) {
             DB::table('accounts')->updateOrInsert(
                 ['code' => $account['code']],
@@ -172,10 +172,10 @@ class PantaSeeder extends Seeder
 
         foreach ($groupParticipants as $participant) {
             $randomClasses = $classes->random(min(5, $classes->count()));
-            
+
             foreach ($randomClasses as $class) {
-                $attended = (bool)rand(0, 1);
-                
+                $attended = (bool) rand(0, 1);
+
                 $attendances[] = [
                     'group_participant_id' => $participant->id,
                     'class_id' => $class->id,
@@ -192,8 +192,11 @@ class PantaSeeder extends Seeder
         })->values()->all();
 
         if (!empty($uniqueAttendances)) {
-            DB::table('attendances')->insert($uniqueAttendances);
-            $this->command->info('Asistencias creadas: ' . count($uniqueAttendances));
+            // CAMBIO: Usar insertOrIgnore()
+            $rowsInserted = DB::table('attendances')->insertOrIgnore($uniqueAttendances);
+
+            $this->command->info('Asistencias procesadas: ' . count($uniqueAttendances));
+            $this->command->info('Nuevas asistencias insertadas: ' . $rowsInserted);
         }
     }
 
@@ -214,7 +217,7 @@ class PantaSeeder extends Seeder
                 'ip_address' => '192.168.' . rand(1, 255) . '.' . rand(1, 255),
                 'reason' => $reasons[rand(0, 3)],
                 'block_date' => Carbon::now()->subDays(rand(1, 60)),
-                'active' => (bool)rand(0, 1),
+                'active' => (bool) rand(0, 1),
             ];
         }
 
@@ -230,7 +233,7 @@ class PantaSeeder extends Seeder
         foreach ($groups as $group) {
             for ($i = 1; $i <= 10; $i++) {
                 $classDate = Carbon::now()->addDays($i * 2);
-                
+
                 $classes[] = [
                     'group_id' => $group->id,
                     'class_name' => 'Clase ' . $i . ' - ' . $group->name,
@@ -283,11 +286,11 @@ class PantaSeeder extends Seeder
     private function run_contact_forms(): void
     {
         $this->command->info('--- Ejecutando Contact Forms (Convertido a DB::table) ---');
-        
+
         // Obtenemos usuarios reales para asignar
         $user1 = DB::table('users')->where('email', 'admin@email.com')->first();
         $user2 = DB::table('users')->where('email', 'maria.garcia@email.com')->first();
-        
+
         $assignee1 = $user1 ? $user1->id : null;
         $assignee2 = $user2 ? $user2->id : null;
 
@@ -362,7 +365,7 @@ class PantaSeeder extends Seeder
         foreach ($contactForms as $contactForm) {
             DB::table('contact_forms')->updateOrInsert(
                 [
-                    'email' => $contactForm['email'], 
+                    'email' => $contactForm['email'],
                     'submission_date' => $contactForm['submission_date']
                 ],
                 $contactForm
@@ -373,7 +376,7 @@ class PantaSeeder extends Seeder
     private function run_course_instructors(): void
     {
         $this->command->info('--- Ejecutando Course Instructors (Referencial) ---');
-        
+
         // Obtenemos cursos por un identificador único (título)
         $courseFS = DB::table('courses')->where('title', 'Desarrollo Web Full Stack')->first();
         $courseDS = DB::table('courses')->where('title', 'Data Science con Python')->first();
@@ -397,7 +400,7 @@ class PantaSeeder extends Seeder
         }
 
         $assignments = [];
-        
+
         // Asignación 1: Full Stack - Carlos
         if ($courseFS) {
             $assignments[] = [
@@ -407,7 +410,7 @@ class PantaSeeder extends Seeder
                 'assigned_date' => Carbon::now()->subDays(rand(1, 30)),
             ];
         }
-        
+
         // Asignación 2: Data Science - Laura
         if ($courseDS) {
             $assignments[] = [
@@ -417,7 +420,7 @@ class PantaSeeder extends Seeder
                 'assigned_date' => Carbon::now()->subDays(rand(1, 30)),
             ];
         }
-        
+
         // Asignación 3 y 4: Intro Prog - Carlos y Laura
         if ($courseIntro) {
             $assignments[] = [
@@ -433,13 +436,13 @@ class PantaSeeder extends Seeder
                 'assigned_date' => Carbon::now()->subDays(rand(1, 30)),
             ];
         }
-        
+
         if (!empty($assignments)) {
             // Insertar solo si no existe la combinación
             foreach ($assignments as $assignment) {
                 DB::table('course_instructors')->updateOrInsert(
                     [
-                        'instructor_id' => $assignment['instructor_id'], 
+                        'instructor_id' => $assignment['instructor_id'],
                         'course_id' => $assignment['course_id']
                     ],
                     $assignment
@@ -458,15 +461,24 @@ class PantaSeeder extends Seeder
 
         if ($instructors->isEmpty()) {
             $this->command->warn('No hay instructores. Creando instructor temporal...');
-            
+
             $user = DB::table('users')->where('email', 'instructor.temporal@email.com')->first();
             if (!$user) {
                 $userId = DB::table('users')->insertGetId([
-                    'first_name' => 'Instructor', 'last_name' => 'Temporal', 'full_name' => 'Instructor Temporal',
-                    'dni' => '99999999', 'document' => '99999999', 'email' => 'instructor.temporal@email.com',
-                    'phone_number' => '+51999999999', 'password' => bcrypt('password123'),
-                    'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['instructor']),
-                    'status' => 'active', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                    'first_name' => 'Instructor',
+                    'last_name' => 'Temporal',
+                    'full_name' => 'Instructor Temporal',
+                    'dni' => '99999999',
+                    'document' => '99999999',
+                    'email' => 'instructor.temporal@email.com',
+                    'phone_number' => '+51999999999',
+                    'password' => bcrypt('password123'),
+                    'gender' => 'male',
+                    'country' => 'Perú',
+                    'role' => json_encode(['instructor']),
+                    'status' => 'active',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]);
             } else {
                 $userId = $user->id;
@@ -516,11 +528,19 @@ class PantaSeeder extends Seeder
                 'name' => 'Full Stack Developer',
                 'description' => 'Curso completo de desarrollo web frontend y backend',
                 'level' => 'intermediate',
-                'duration' => 120.50, 'sessions' => 40, 'selling_price' => 1500.00, 'discount_price' => 1200.00,
+                'duration' => 120.50,
+                'sessions' => 40,
+                'selling_price' => 1500.00,
+                'discount_price' => 1200.00,
                 'prerequisites' => 'Conocimientos básicos de programación',
-                'certificate_name' => true, 'certificate_issuer' => 'Academia Tech',
-                'bestseller' => true, 'featured' => true, 'highest_rated' => true, 'status' => true,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                'certificate_name' => true,
+                'certificate_issuer' => 'Academia Tech',
+                'bestseller' => true,
+                'featured' => true,
+                'highest_rated' => true,
+                'status' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
                 // 'course_id' => 1002, // REMOVIDO
@@ -528,11 +548,19 @@ class PantaSeeder extends Seeder
                 'name' => 'Data Science Professional',
                 'description' => 'Aprende análisis de datos y machine learning con Python',
                 'level' => 'advanced',
-                'duration' => 180.25, 'sessions' => 60, 'selling_price' => 2000.00, 'discount_price' => 1600.00,
+                'duration' => 180.25,
+                'sessions' => 60,
+                'selling_price' => 2000.00,
+                'discount_price' => 1600.00,
                 'prerequisites' => 'Conocimientos de Python y estadística',
-                'certificate_name' => true, 'certificate_issuer' => 'Academia Tech',
-                'bestseller' => true, 'featured' => false, 'highest_rated' => true, 'status' => true,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                'certificate_name' => true,
+                'certificate_issuer' => 'Academia Tech',
+                'bestseller' => true,
+                'featured' => false,
+                'highest_rated' => true,
+                'status' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ],
             [
                 // 'course_id' => 1003, // REMOVIDO
@@ -540,11 +568,19 @@ class PantaSeeder extends Seeder
                 'name' => 'Programming Fundamentals',
                 'description' => 'Fundamentos de programación para principiantes',
                 'level' => 'basic',
-                'duration' => 80.00, 'sessions' => 30, 'selling_price' => 800.00, 'discount_price' => 600.00,
+                'duration' => 80.00,
+                'sessions' => 30,
+                'selling_price' => 800.00,
+                'discount_price' => 600.00,
                 'prerequisites' => 'Ninguno',
-                'certificate_name' => true, 'certificate_issuer' => 'Academia Tech',
-                'bestseller' => false, 'featured' => true, 'highest_rated' => false, 'status' => true,
-                'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                'certificate_name' => true,
+                'certificate_issuer' => 'Academia Tech',
+                'bestseller' => false,
+                'featured' => true,
+                'highest_rated' => false,
+                'status' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]
         ];
 
@@ -600,7 +636,7 @@ class PantaSeeder extends Seeder
         foreach ($users as $user) {
             $position = $positions->random();
             $department = $departments->where('id', $position->department_id)->first();
-            
+
             // Si no encontramos depto por ID de posición, tomamos uno al azar
             if (!$department) {
                 $department = $departments->random();
@@ -642,7 +678,7 @@ class PantaSeeder extends Seeder
         $enrollments = DB::table('enrollments')->get();
         $subjects = DB::table('subjects')->get();
         $courseOfferings = DB::table('course_offerings')->get();
-        
+
         if ($enrollments->isEmpty() || $subjects->isEmpty() || $courseOfferings->isEmpty()) {
             $this->command->warn('Faltan datos (enrollments, subjects, courseOfferings). Saltando EnrollmentDetails.');
             return;
@@ -659,13 +695,14 @@ class PantaSeeder extends Seeder
                 'created_at' => Carbon::now(),
             ];
         }
-        
+
         // Evitar duplicados
         $uniqueDetails = collect($enrollmentDetails)->unique(function ($item) {
             return $item['enrollment_id'] . '-' . $item['subject_id'] . '-' . $item['course_offering_id'];
         })->values()->all();
 
-        DB::table('enrollment_details')->insert($uniqueDetails);
+        $rowsInserted = DB::table('enrollment_details')->insertOrIgnore($uniqueDetails);
+        $this->command->info("Nuevos detalles de matrícula insertados: $rowsInserted");
     }
 
     private function run_enrollments(): void
@@ -696,8 +733,9 @@ class PantaSeeder extends Seeder
         $uniqueEnrollments = collect($enrollments)->unique(function ($item) {
             return $item['student_id'] . '-' . $item['academic_period_id'];
         })->values()->all();
-        
-        DB::table('enrollments')->insert($uniqueEnrollments);
+
+        $rowsInserted = DB::table('enrollments')->insertOrIgnore($uniqueEnrollments);
+        $this->command->info("Nuevas matrículas insertadas: $rowsInserted");
     }
 
     private function run_escalations(): void
@@ -725,7 +763,7 @@ class PantaSeeder extends Seeder
 
         foreach ($tickets as $ticket) {
             $technicians = $employees->random(2);
-            
+
             $escalations[] = [
                 // 'escalation_id' => ..., // REMOVIDO
                 'ticket_id' => $ticket->id,
@@ -734,14 +772,15 @@ class PantaSeeder extends Seeder
                 'escalation_reason' => $reasons[rand(0, 3)],
                 'observations' => 'Escalación realizada por complejidad del caso.',
                 'escalation_date' => Carbon::now()->subDays(rand(1, 20)),
-                'approved' => (bool)rand(0, 1),
+                'approved' => (bool) rand(0, 1),
             ];
         }
-        
+
         // Evitar escalar el mismo ticket dos veces
         $uniqueEscalations = collect($escalations)->unique('ticket_id')->values()->all();
-        DB::table('escalations')->insert($uniqueEscalations);
-        $this->command->info('Escalaciones creadas: ' . count($uniqueEscalations));
+        $rowsInserted = DB::table('escalations')->insertOrIgnore($uniqueEscalations);
+        $this->command->info('Escalaciones procesadas: ' . count($uniqueEscalations));
+        $this->command->info('Nuevas escalaciones insertadas: ' . $rowsInserted);
     }
 
     private function run_evaluations(): void
@@ -761,7 +800,7 @@ class PantaSeeder extends Seeder
         foreach ($groups as $group) {
             foreach ($evaluationTypes as $type) {
                 $teacher = $teachers->random();
-                
+
                 $evaluations[] = [
                     'group_id' => $group->id,
                     'title' => $type . ' - ' . $group->name,
@@ -775,7 +814,7 @@ class PantaSeeder extends Seeder
                 ];
             }
         }
-        
+
         // Evitar duplicados (mismo tipo de eval en mismo grupo)
         $uniqueEvals = collect($evaluations)->unique(function ($item) {
             return $item['group_id'] . '-' . $item['title'];
@@ -799,7 +838,7 @@ class PantaSeeder extends Seeder
         $finalGrades = [];
         foreach ($studentUsers as $user) {
             $randomGroups = $groups->random(min(3, $groups->count()));
-            
+
             foreach ($randomGroups as $group) {
                 $finalGrade = rand(5000, 10000) / 100; // Nota entre 50.00 y 100.00
                 $programStatus = $finalGrade >= 70 ? 'Passed' : 'Failed';
@@ -821,8 +860,9 @@ class PantaSeeder extends Seeder
         })->values()->all();
 
         if (!empty($uniqueFinalGrades)) {
-            DB::table('final_grades')->insert($uniqueFinalGrades);
-            $this->command->info('Calificaciones finales creadas: ' . count($uniqueFinalGrades));
+            $rowsInserted = DB::table('final_grades')->insertOrIgnore($uniqueFinalGrades);
+            $this->command->info('Calificaciones finales procesadas: ' . count($uniqueFinalGrades));
+            $this->command->info('Nuevas calificaciones insertadas: ' . $rowsInserted);
         }
     }
 
@@ -844,7 +884,7 @@ class PantaSeeder extends Seeder
 
         foreach ($payments as $payment) {
             $invoice = $invoices->where('id', $payment->invoice_id)->first();
-            
+
             if ($invoice) {
                 $transactions[] = [
                     'account_id' => $accountIncome->id,
@@ -871,7 +911,7 @@ class PantaSeeder extends Seeder
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];
-        
+
         // Evitar duplicados (basado en payment_id)
         $uniqueTransactions = collect($transactions)->unique(function ($item) {
             return $item['payment_id'] ?? $item['description'] . $item['transaction_date'];
@@ -895,7 +935,7 @@ class PantaSeeder extends Seeder
 
         foreach ($studentUsers as $user) {
             $randomEvaluations = $evaluations->random(min(8, $evaluations->count()));
-            
+
             foreach ($randomEvaluations as $evaluation) {
                 $grade = rand(5000, 10000) / 100;
                 $gradeRecords[] = [
@@ -917,7 +957,7 @@ class PantaSeeder extends Seeder
         if (!empty($uniqueGradeRecords)) {
             // CAMBIO: Usar insertOrIgnore() para saltar duplicados
             $rowsInserted = DB::table('grade_records')->insertOrIgnore($uniqueGradeRecords);
-            
+
             $this->command->info('Registros de calificaciones procesados: ' . count($uniqueGradeRecords));
             $this->command->info('Nuevos registros insertados: ' . $rowsInserted);
         }
@@ -925,10 +965,14 @@ class PantaSeeder extends Seeder
 
     private function generateFeedback($grade): string
     {
-        if ($grade >= 90) return 'Excelente trabajo, demuestra dominio completo del tema.';
-        if ($grade >= 80) return 'Buen desempeño, comprende bien los conceptos.';
-        if ($grade >= 70) return 'Desempeño satisfactorio, puede mejorar en algunos aspectos.';
-        if ($grade >= 60) return 'Necesita reforzar algunos conceptos clave.';
+        if ($grade >= 90)
+            return 'Excelente trabajo, demuestra dominio completo del tema.';
+        if ($grade >= 80)
+            return 'Buen desempeño, comprende bien los conceptos.';
+        if ($grade >= 70)
+            return 'Desempeño satisfactorio, puede mejorar en algunos aspectos.';
+        if ($grade >= 60)
+            return 'Necesita reforzar algunos conceptos clave.';
         return 'Requiere estudio adicional y práctica.';
     }
 
@@ -951,7 +995,7 @@ class PantaSeeder extends Seeder
             if ($instructors->isNotEmpty()) {
                 $instructor = $instructors->random();
                 $instructorUser = $users->where('id', $instructor->user_id)->first();
-                
+
                 if ($instructorUser) {
                     $participants[] = [
                         'group_id' => $group->id,
@@ -975,7 +1019,7 @@ class PantaSeeder extends Seeder
         if ($studentUsers->isNotEmpty()) {
             foreach ($groups as $group) {
                 $randomStudents = $studentUsers->random(min(5, $studentUsers->count()));
-                
+
                 foreach ($randomStudents as $student) {
                     $participants[] = [
                         'group_id' => $group->id,
@@ -999,12 +1043,12 @@ class PantaSeeder extends Seeder
             // Esto evitará el error de 'Duplicate entry' al
             // simplemente ignorar las filas que ya existen.
             $rowsInserted = DB::table('group_participants')->insertOrIgnore($uniqueParticipants);
-            
+
             $this->command->info('Participantes de grupo procesados (potenciales): ' . count($uniqueParticipants));
             $this->command->info('Nuevos participantes insertados: ' . $rowsInserted); // Te dirá cuántos SÍ se insertaron
             $this->command->info(' - Teachers (procesados): ' . collect($uniqueParticipants)->where('role', 'teacher')->count());
             $this->command->info(' - Students (procesados): ' . collect($uniqueParticipants)->where('role', 'student')->count());
-            
+
         } else {
             $this->command->warn('No se generaron participantes de grupo únicos.');
         }
@@ -1014,7 +1058,7 @@ class PantaSeeder extends Seeder
     {
         $this->command->info('--- Ejecutando Groups ---');
         $courses = DB::table('courses')->get();
-        
+
         if ($courses->isEmpty()) {
             $this->command->warn('No hay cursos. Saltando Groups.');
             return;
@@ -1038,7 +1082,7 @@ class PantaSeeder extends Seeder
                 ];
             }
         }
-        
+
         foreach ($groups as $group) {
             DB::table('groups')->updateOrInsert(
                 ['name' => $group['name']], // Usar nombre como clave única
@@ -1052,7 +1096,7 @@ class PantaSeeder extends Seeder
         $this->command->info('--- Ejecutando Incidents ---');
         $securityAlerts = DB::table('security_alerts')->whereIn('severity', ['high', 'critical'])->get();
         $employees = DB::table('employees')->get();
-        
+
         if ($securityAlerts->isEmpty() || $employees->isEmpty()) {
             $this->command->warn('No hay alertas de seguridad o empleados. Saltando Incidents.');
             return;
@@ -1069,9 +1113,10 @@ class PantaSeeder extends Seeder
                 'report_date' => $alert->detection_date,
             ];
         }
-        
+
         $uniqueIncidents = collect($incidents)->unique('alert_id')->values()->all();
-        DB::table('incidents')->insert($uniqueIncidents);
+        $rowsInserted = DB::table('incidents')->insertOrIgnore($uniqueIncidents);
+        $this->command->info("Nuevos incidentes insertados: $rowsInserted");
     }
 
     private function run_instructors(): void
@@ -1083,18 +1128,36 @@ class PantaSeeder extends Seeder
             $this->command->warn('No hay usuarios instructores, creando...');
             $instructorData = [
                 [
-                    'first_name' => 'Carlos', 'last_name' => 'Rodríguez', 'full_name' => 'Carlos Rodríguez',
-                    'dni' => '11223344', 'document' => '11223344', 'email' => 'carlos.rodriguez@email.com',
-                    'phone_number' => '+51987654323', 'password' => bcrypt('password123'),
-                    'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['instructor']),
-                    'status' => 'active', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                    'first_name' => 'Carlos',
+                    'last_name' => 'Rodríguez',
+                    'full_name' => 'Carlos Rodríguez',
+                    'dni' => '11223344',
+                    'document' => '11223344',
+                    'email' => 'carlos.rodriguez@email.com',
+                    'phone_number' => '+51987654323',
+                    'password' => bcrypt('password123'),
+                    'gender' => 'male',
+                    'country' => 'Perú',
+                    'role' => json_encode(['instructor']),
+                    'status' => 'active',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ],
                 [
-                    'first_name' => 'Laura', 'last_name' => 'Martínez', 'full_name' => 'Laura Martínez',
-                    'dni' => '22334455', 'document' => '22334455', 'email' => 'laura.martinez@email.com',
-                    'phone_number' => '+51987654325', 'password' => bcrypt('password123'),
-                    'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['instructor']),
-                    'status' => 'active', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now(),
+                    'first_name' => 'Laura',
+                    'last_name' => 'Martínez',
+                    'full_name' => 'Laura Martínez',
+                    'dni' => '22334455',
+                    'document' => '22334455',
+                    'email' => 'laura.martinez@email.com',
+                    'phone_number' => '+51987654325',
+                    'password' => bcrypt('password123'),
+                    'gender' => 'female',
+                    'country' => 'Perú',
+                    'role' => json_encode(['instructor']),
+                    'status' => 'active',
+                    'created_at' => Carbon::now(),
+                    'updated_at' => Carbon::now(),
                 ]
             ];
 
@@ -1102,7 +1165,7 @@ class PantaSeeder extends Seeder
                 $user = DB::table('users')->where('email', $userData['email'])->first();
                 if (!$user) {
                     $userId = DB::table('users')->insertGetId($userData);
-                    $instructorUsers->push((object)array_merge($userData, ['id' => $userId]));
+                    $instructorUsers->push((object) array_merge($userData, ['id' => $userId]));
                 }
             }
         }
@@ -1133,7 +1196,7 @@ class PantaSeeder extends Seeder
         $this->command->info('--- Ejecutando Invoices ---');
         $enrollments = DB::table('enrollments')->get();
         $revenueSources = DB::table('revenue_sources')->get();
-        
+
         if ($enrollments->isEmpty() || $revenueSources->isEmpty()) {
             $this->command->warn('No hay Enrollments o Revenue Sources. Saltando Invoices.');
             return;
@@ -1144,7 +1207,7 @@ class PantaSeeder extends Seeder
 
         foreach ($enrollments as $index => $enrollment) {
             $totalAmount = rand(500, 2000) + (rand(0, 99) / 100);
-            
+
             $invoices[] = [
                 'enrollment_id' => $enrollment->id,
                 'revenue_source_id' => $revenueSources->random()->id,
@@ -1206,7 +1269,7 @@ class PantaSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ];
         }
-        
+
         $uniquePayments = collect($payments)->unique('invoice_id')->values()->all();
         DB::table('payments')->insert($uniquePayments);
     }
@@ -1236,7 +1299,7 @@ class PantaSeeder extends Seeder
             ['name' => 'Asistente Administrativo', 'dept_name' => 'Administración'],
             ['name' => 'Especialista en Marketing Digital', 'dept_name' => 'Marketing']
         ];
-        
+
         foreach ($positions as $pos) {
             $deptId = $getDeptId($pos['dept_name']);
             if (!is_null($deptId)) {
@@ -1272,7 +1335,7 @@ class PantaSeeder extends Seeder
     {
         $this->command->info('--- Ejecutando Security Alerts ---');
         $blockedIPs = DB::table('blocked_ips')->get();
-        
+
         if ($blockedIPs->isEmpty()) {
             $this->command->warn('No hay IPs bloqueadas. Saltando SecurityAlerts.');
             return;
@@ -1293,9 +1356,10 @@ class PantaSeeder extends Seeder
                 'detection_date' => $blockedIP->block_date,
             ];
         }
-        
+
         $uniqueAlerts = collect($securityAlerts)->unique('blocked_ip_id')->values()->all();
-        DB::table('security_alerts')->insert($uniqueAlerts);
+        $rowsInserted = DB::table('security_alerts')->insertOrIgnore($uniqueAlerts);
+        $this->command->info("Nuevas alertas de seguridad insertadas: $rowsInserted");
     }
 
     private function run_security_logs(): void
@@ -1331,7 +1395,7 @@ class PantaSeeder extends Seeder
         $this->command->info('--- Ejecutando Students ---');
         $users = DB::table('users')->where('role', 'like', '%student%')->get();
         $companies = DB::table('companies')->get();
-        
+
         if ($users->isEmpty() || $companies->isEmpty()) {
             $this->command->warn('No hay usuarios Estudiantes o Compañías. Saltando Students.');
             return;
@@ -1370,7 +1434,7 @@ class PantaSeeder extends Seeder
             ['subject_code' => 'DATA301', 'subject_name' => 'Ciencia de Datos', 'credits' => 6, 'status' => 'active'],
             ['subject_code' => 'DB402', 'subject_name' => 'Bases de Datos', 'credits' => 4, 'status' => 'active'],
         ];
-        
+
         foreach ($subjects as $subject) {
             DB::table('subjects')->updateOrInsert(
                 ['subject_code' => $subject['subject_code']],
@@ -1384,7 +1448,7 @@ class PantaSeeder extends Seeder
         $this->command->info('--- Ejecutando Tickets ---');
         $users = DB::table('users')->get();
         $employees = DB::table('employees')->get();
-        
+
         if ($users->isEmpty() || $employees->isEmpty()) {
             $this->command->warn('No hay Usuarios o Empleados. Saltando Tickets.');
             return;
@@ -1413,24 +1477,35 @@ class PantaSeeder extends Seeder
             ];
         }
 
-        DB::table('tickets')->insert($tickets);
+        $rowsInserted = DB::table('tickets')->insertOrIgnore($tickets);
+        $this->command->info("Tickets insertados: $rowsInserted");
     }
 
     private function run_users(): void
     {
         $this->command->info('--- Ejecutando Users (fusionado) ---');
-        
+
         // De DefaultUsersSeeder
         $defaultUsers = [
             [
-                'first_name' => 'Admin', 'last_name' => 'Developer', 'full_name' => 'Admin Developer',
-                'email' => 'developer@incadev.com', 'password' => Hash::make('password'),
-                'role' => json_encode(['admin']), 'status' => 'active', 'email_verified_at' => now(),
+                'first_name' => 'Admin',
+                'last_name' => 'Developer',
+                'full_name' => 'Admin Developer',
+                'email' => 'developer@incadev.com',
+                'password' => Hash::make('password'),
+                'role' => json_encode(['admin']),
+                'status' => 'active',
+                'email_verified_at' => now(),
             ],
             [
-                'first_name' => 'Content', 'last_name' => 'Manager', 'full_name' => 'Content Manager',
-                'email' => 'content@incadev.com', 'password' => Hash::make('password'),
-                'role' => json_encode(['content_manager']), 'status' => 'active', 'email_verified_at' => now(),
+                'first_name' => 'Content',
+                'last_name' => 'Manager',
+                'full_name' => 'Content Manager',
+                'email' => 'content@incadev.com',
+                'password' => Hash::make('password'),
+                'role' => json_encode(['content_manager']),
+                'status' => 'active',
+                'email_verified_at' => now(),
             ]
         ];
 
@@ -1444,79 +1519,175 @@ class PantaSeeder extends Seeder
         // De UsersSeeder
         $users = [
             [
-                'first_name' => 'admin', 'last_name' => 'Pérez', 'full_name' => 'Juan Pérez',
-                'dni' => '12345678', 'document' => '12345678', 'email' => 'admin@email.com',
-                'phone_number' => '+51987654321', 'password' => Hash::make('password123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['admin']), 'status' => 'active',
+                'first_name' => 'admin',
+                'last_name' => 'Pérez',
+                'full_name' => 'Juan Pérez',
+                'dni' => '12345678',
+                'document' => '12345678',
+                'email' => 'admin@email.com',
+                'phone_number' => '+51987654321',
+                'password' => Hash::make('password123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['admin']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'María', 'last_name' => 'García', 'full_name' => 'María García',
-                'dni' => '87654321', 'document' => '87654321', 'email' => 'maria.garcia@email.com',
-                'phone_number' => '+51987654322', 'password' => Hash::make('password123'),
-                'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['student']), 'status' => 'active',
+                'first_name' => 'María',
+                'last_name' => 'García',
+                'full_name' => 'María García',
+                'dni' => '87654321',
+                'document' => '87654321',
+                'email' => 'maria.garcia@email.com',
+                'phone_number' => '+51987654322',
+                'password' => Hash::make('password123'),
+                'gender' => 'female',
+                'country' => 'Perú',
+                'role' => json_encode(['student']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Carlos', 'last_name' => 'López', 'full_name' => 'Carlos López',
-                'dni' => '23456789', 'document' => '23456789', 'email' => 'carlos.lopez@email.com',
-                'phone_number' => '+51987654328', 'password' => Hash::make('password123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['student']), 'status' => 'active',
+                'first_name' => 'Carlos',
+                'last_name' => 'López',
+                'full_name' => 'Carlos López',
+                'dni' => '23456789',
+                'document' => '23456789',
+                'email' => 'carlos.lopez@email.com',
+                'phone_number' => '+51987654328',
+                'password' => Hash::make('password123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['student']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Ana', 'last_name' => 'Martínez', 'full_name' => 'Ana Martínez',
-                'dni' => '34567890', 'document' => '34567890', 'email' => 'ana.martinez@email.com',
-                'phone_number' => '+51987654329', 'password' => Hash::make('password123'),
-                'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['student']), 'status' => 'active',
+                'first_name' => 'Ana',
+                'last_name' => 'Martínez',
+                'full_name' => 'Ana Martínez',
+                'dni' => '34567890',
+                'document' => '34567890',
+                'email' => 'ana.martinez@email.com',
+                'phone_number' => '+51987654329',
+                'password' => Hash::make('password123'),
+                'gender' => 'female',
+                'country' => 'Perú',
+                'role' => json_encode(['student']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Luis', 'last_name' => 'González', 'full_name' => 'Luis González',
-                'dni' => '45678901', 'document' => '45678901', 'email' => 'luis.gonzalez@email.com',
-                'phone_number' => '+51987654330', 'password' => Hash::make('password123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['student']), 'status' => 'active',
+                'first_name' => 'Luis',
+                'last_name' => 'González',
+                'full_name' => 'Luis González',
+                'dni' => '45678901',
+                'document' => '45678901',
+                'email' => 'luis.gonzalez@email.com',
+                'phone_number' => '+51987654330',
+                'password' => Hash::make('password123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['student']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Roberto', 'last_name' => 'Rodríguez', 'full_name' => 'Roberto Rodríguez',
-                'dni' => '11223344', 'document' => '11223344', 'email' => 'roberto.rodriguez@email.com',
-                'phone_number' => '+51987654323', 'password' => Hash::make('password123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['instructor']), 'status' => 'active',
+                'first_name' => 'Roberto',
+                'last_name' => 'Rodríguez',
+                'full_name' => 'Roberto Rodríguez',
+                'dni' => '11223344',
+                'document' => '11223344',
+                'email' => 'roberto.rodriguez@email.com',
+                'phone_number' => '+51987654323',
+                'password' => Hash::make('password123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['instructor']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Laura', 'last_name' => 'Silva', 'full_name' => 'Laura Silva',
-                'dni' => '22334455', 'document' => '22334455', 'email' => 'laura.silva@email.com',
-                'phone_number' => '+51987654325', 'password' => Hash::make('password123'),
-                'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['instructor']), 'status' => 'active',
+                'first_name' => 'Laura',
+                'last_name' => 'Silva',
+                'full_name' => 'Laura Silva',
+                'dni' => '22334455',
+                'document' => '22334455',
+                'email' => 'laura.silva@email.com',
+                'phone_number' => '+51987654325',
+                'password' => Hash::make('password123'),
+                'gender' => 'female',
+                'country' => 'Perú',
+                'role' => json_encode(['instructor']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Ana', 'last_name' => 'López', 'full_name' => 'Ana López',
-                'dni' => '44332211', 'document' => '44332211', 'email' => 'ana.lopez@email.com',
-                'phone_number' => '+51987654324', 'password' => Hash::make('password123'),
-                'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['employee', 'technician']), 'status' => 'active',
+                'first_name' => 'Ana',
+                'last_name' => 'López',
+                'full_name' => 'Ana López',
+                'dni' => '44332211',
+                'document' => '44332211',
+                'email' => 'ana.lopez@email.com',
+                'phone_number' => '+51987654324',
+                'password' => Hash::make('password123'),
+                'gender' => 'female',
+                'country' => 'Perú',
+                'role' => json_encode(['employee', 'technician']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Pedro', 'last_name' => 'Gómez', 'full_name' => 'Pedro Gómez',
-                'dni' => '55443322', 'document' => '55443322', 'email' => 'pedro.gomez@email.com',
-                'phone_number' => '+51987654326', 'password' => Hash::make('password123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['employee', 'technician']), 'status' => 'active',
+                'first_name' => 'Pedro',
+                'last_name' => 'Gómez',
+                'full_name' => 'Pedro Gómez',
+                'dni' => '55443322',
+                'document' => '55443322',
+                'email' => 'pedro.gomez@email.com',
+                'phone_number' => '+51987654326',
+                'password' => Hash::make('password123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['employee', 'technician']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Lucía', 'last_name' => 'Ramírez', 'full_name' => 'Lucía Ramírez',
-                'dni' => '66554433', 'document' => '66554433', 'email' => 'lucia.ramirez@email.com',
-                'phone_number' => '+51987654327', 'password' => Hash::make('password123'),
-                'gender' => 'female', 'country' => 'Perú', 'role' => json_encode(['employee', 'technician']), 'status' => 'active',
+                'first_name' => 'Lucía',
+                'last_name' => 'Ramírez',
+                'full_name' => 'Lucía Ramírez',
+                'dni' => '66554433',
+                'document' => '66554433',
+                'email' => 'lucia.ramirez@email.com',
+                'phone_number' => '+51987654327',
+                'password' => Hash::make('password123'),
+                'gender' => 'female',
+                'country' => 'Perú',
+                'role' => json_encode(['employee', 'technician']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Desarrollador', 'last_name' => 'Web', 'full_name' => 'Desarrollador Web',
-                'dni' => '66554436', 'document' => '66554436', 'email' => 'developer.web@email.com',
-                'phone_number' => '+51987654328', 'password' => Hash::make('devweb123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['web','employee', 'technician']), 'status' => 'active',
+                'first_name' => 'Desarrollador',
+                'last_name' => 'Web',
+                'full_name' => 'Desarrollador Web',
+                'dni' => '66554436',
+                'document' => '66554436',
+                'email' => 'developer.web@email.com',
+                'phone_number' => '+51987654328',
+                'password' => Hash::make('devweb123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['web', 'employee', 'technician']),
+                'status' => 'active',
             ],
             [
-                'first_name' => 'Data', 'last_name' => 'Analyst', 'full_name' => 'Data Analyst',
-                'dni' => '66554430', 'document' => '66554430', 'email' => 'data.analyst@email.com',
-                'phone_number' => '+51987654320', 'password' => Hash::make('data123'),
-                'gender' => 'male', 'country' => 'Perú', 'role' => json_encode(['data', 'employee', 'technician']), 'status' => 'active',
+                'first_name' => 'Data',
+                'last_name' => 'Analyst',
+                'full_name' => 'Data Analyst',
+                'dni' => '66554430',
+                'document' => '66554430',
+                'email' => 'data.analyst@email.com',
+                'phone_number' => '+51987654320',
+                'password' => Hash::make('data123'),
+                'gender' => 'male',
+                'country' => 'Perú',
+                'role' => json_encode(['data', 'employee', 'technician']),
+                'status' => 'active',
             ]
         ];
-        
+
         $count = 0;
         foreach ($users as $user) {
             if (!DB::table('users')->where('email', $user['email'])->exists()) {
