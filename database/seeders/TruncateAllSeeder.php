@@ -21,6 +21,17 @@ class TruncateAllSeeder extends Seeder
 
         $this->command->info('Vaciando tablas (TRUNCATE)...');
 
+        DB::table('documents')->truncate();
+        DB::table('documents')->truncate();
+        DB::table('document_versions')->truncate();
+        DB::table('document_history')->truncate();
+        DB::table('payments')->truncate();
+        DB::table('invoices')->truncate();
+        DB::table('academic_periods')->truncate();
+        DB::table('payment_methods')->truncate();
+        DB::table('students')->truncate();
+        DB::table('enrollments')->truncate();
+
         // --- Tablas Nietas (Máxima dependencia) ---
         DB::table('class_materials')->truncate();
         DB::table('attendances')->truncate();
