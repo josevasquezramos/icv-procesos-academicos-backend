@@ -60,7 +60,7 @@ class TruncateAllSeeder extends Seeder
         DB::table('positions')->truncate(); // <-- de RandalSeeder
         DB::table('departments')->truncate(); // <-- de RandalSeeder
         DB::table('vocational_questionnaires')->truncate(); // <-- de RandalSeeder
-        DB::table('attention_students_request_types')->truncate(); // <-- de RandalSeeder
+        DB::table('attention_students_Request_Types')->truncate(); // <-- de RandalSeeder
 
         // --- Tabla Raíz (Máxima autoridad) ---
         DB::table('users')->truncate(); 
