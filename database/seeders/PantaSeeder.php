@@ -915,8 +915,11 @@ class PantaSeeder extends Seeder
         })->values()->all();
 
         if (!empty($uniqueGradeRecords)) {
-            DB::table('grade_records')->insert($uniqueGradeRecords);
-            $this->command->info('Registros de calificaciones creados: ' . count($uniqueGradeRecords));
+            // CAMBIO: Usar insertOrIgnore() para saltar duplicados
+            $rowsInserted = DB::table('grade_records')->insertOrIgnore($uniqueGradeRecords);
+            
+            $this->command->info('Registros de calificaciones procesados: ' . count($uniqueGradeRecords));
+            $this->command->info('Nuevos registros insertados: ' . $rowsInserted);
         }
     }
 
