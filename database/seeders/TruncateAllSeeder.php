@@ -107,6 +107,14 @@ class TruncateAllSeeder extends Seeder
         DB::table('subjects')->truncate();
         DB::table('tickets')->truncate();
         DB::table('academic_periods')->truncate();
+        DB::table('course_offerings')->truncate();
+        DB::table('course_instructors')->truncate();
+
+        DB::table('enrollment_details')->truncate();
+        DB::table('classes')->truncate();
+        DB::table('attendances')->truncate();
+        DB::table('escalations')->truncate();
+        DB::table('contact_forms')->truncate();
 
         // --- Tabla Raíz (Máxima autoridad) ---
         DB::table('users')->truncate(); 
