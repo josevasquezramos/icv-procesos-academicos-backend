@@ -864,6 +864,49 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        /**
+         * REQUISITO DE TREJO
+         */
+
+        
+        // DNIs de los usuarios existentes
+        $dnis = [
+            '10101010', '20202020', '30303030', '75412099', '40404040',
+            '50505050', '60606060', '70707070', '80808080', '90909090',
+            '12121212', '13131313', '99999997', '77777779'
+        ];
+
+        $studentsData = [];
+        $counter = 1;
+
+        foreach ($dnis as $dni) {
+            // Obtener el usuario por DNI
+            $user = DB::table('users')->where('dni', $dni)->first();
+            
+            if ($user) {
+                // Generar student_id: "202114" + número consecutivo (2 dígitos)
+                $studentId = '202114' . str_pad($counter, 2, '0', STR_PAD_LEFT);
+                
+                $studentsData[] = [
+                    'student_id' => $studentId,
+                    'user_id' => $user->id,
+                    'company_id' => null,
+                    'document_number' => $user->document ?? $user->dni,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'email' => $user->email,
+                    'phone' => null,
+                    'status' => 'active',
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ];
+                
+                $counter++;
+            }
+        }
+
+        // Insertar todos los estudiantes
+        DB::table('students')->insert($studentsData);
 
         // -----------------------------------------------------------------
         // 7. REPORTE FINAL
