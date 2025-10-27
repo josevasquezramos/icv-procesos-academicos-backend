@@ -992,8 +992,18 @@ class PantaSeeder extends Seeder
         })->values()->all();
 
         if (!empty($uniqueParticipants)) {
-            DB::table('group_participants')->insert($uniqueParticipants);
-            $this->command->info('Participantes de grupo creados: ' . count($uniqueParticipants));
+            // CAMBIO: Usar insertOrIgnore() en lugar de insert()
+            // Esto evitará el error de 'Duplicate entry' al
+            // simplemente ignorar las filas que ya existen.
+            $rowsInserted = DB::table('group_participants')->insertOrIgnore($uniqueParticipants);
+            
+            $this->command->info('Participantes de grupo procesados (potenciales): ' . count($uniqueParticipants));
+            $this->command->info('Nuevos participantes insertados: ' . $rowsInserted); // Te dirá cuántos SÍ se insertaron
+            $this->command->info(' - Teachers (procesados): ' . collect($uniqueParticipants)->where('role', 'teacher')->count());
+            $this->command->info(' - Students (procesados): ' . collect($uniqueParticipants)->where('role', 'student')->count());
+            
+        } else {
+            $this->command->warn('No se generaron participantes de grupo únicos.');
         }
     }
 
