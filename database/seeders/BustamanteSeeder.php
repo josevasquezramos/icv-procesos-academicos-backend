@@ -39,5 +39,7 @@ class BustamanteSeeder extends Seeder
                 'role' => ['user'],
             ]
         );
+
+        $this->command->info('   - Usuarios: ' . User::count());
     }
 }
