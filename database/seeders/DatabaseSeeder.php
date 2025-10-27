@@ -36,46 +36,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        // --- INICIO: BLOQUE DE LIMPIEZA DEFINITIVO ---
-
-        $this->command->info('Deshabilitando llaves foráneas...');
-        Schema::disableForeignKeyConstraints();
-
-        $this->command->info('Vaciando todas las tablas (TRUNCATE)...');
-
-        // Usamos TRUNCATE para vaciar y resetear los IDs auto-incrementales.
-        // El orden es de "hijos" a "padres" para mayor seguridad.
-
-        // Tablas "nietas" (dependen de otras)
-        DB::table('class_materials')->truncate();
-        DB::table('attendances')->truncate();
-        DB::table('grade_records')->truncate();
-        DB::table('survey_questions')->truncate();
-
-        // Tablas "hijas"
-        DB::table('teacher_profiles')->truncate();
-        DB::table('employment_profiles')->truncate();
-        DB::table('program_courses')->truncate();
-        DB::table('course_previous_requirements')->truncate();
-        DB::table('evaluations')->truncate();
-        DB::table('classes')->truncate();
-        DB::table('group_participants')->truncate();
-        DB::table('final_grades')->truncate();
-        DB::table('credentials')->truncate();
-
-        // Tablas "padre"
-        DB::table('academic_settings')->truncate();
-        DB::table('groups')->truncate();
-        DB::table('courses')->truncate();
-        DB::table('programs')->truncate();
-        DB::table('surveys')->truncate();
-        DB::table('users')->truncate(); // Esta es la que daba el error
-
-        $this->command->info('Tablas vaciadas. Reactivando llaves foráneas...');
-        Schema::enableForeignKeyConstraints();
-
-        // --- FIN: BLOQUE DE LIMPIEZA ---
-
         // -----------------------------------------------------------------
         // 0. CONFIGURACIÓN ACADÉMICA
         // -----------------------------------------------------------------
@@ -312,8 +272,10 @@ class DatabaseSeeder extends Seeder
             User::create(['first_name' => 'JOSE ANTONIO', 'last_name' => 'TORRES MILLA', 'full_name' => 'JOSE ANTONIO TORRES MILLA', 'dni' => '70707070', 'email' => 'jose.torres@example.com', 'password' => Hash::make('password'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
             User::create(['first_name' => 'RONALD FABRIZIO', 'last_name' => 'HURTADO RAMOS', 'full_name' => 'RONALD FABRIZIO HURTADO RAMOS', 'dni' => '80808080', 'email' => 'ronald.hurtado@example.com', 'password' => Hash::make('password'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
             User::create(['first_name' => 'JHOAN ANTONI', 'last_name' => 'CRUZ CASTILLO', 'full_name' => 'JHOAN ANTONI CRUZ CASTILLO', 'dni' => '90909090', 'email' => 'jhoan.cruz@example.com', 'password' => Hash::make('password'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
-            User::create(['first_name' => 'LUIS ANGEL', 'last_name' => 'GONZALES BERROCAL', 'full_name' => 'LUIS ANGEL GONZALES BERROCAL', 'dni' => '12121212', 'email' => 'luis.gonzales@example.com', 'password' => Hash::make('password'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
+            User::create(['first_name' => 'LUIS ANGEL', 'last_name' => 'GONZALES BERROCAL', 'full_name' => 'LUIS ANGEL GONZALES BERROCAL', 'dni' => '12121212', 'document' => 'DOC-AUDITOR', 'email' => 'auditor@example.com', 'password' => Hash::make('12345678'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
             User::create(['first_name' => 'ANGEL WILFREDO', 'last_name' => 'BUSTAMANTE PALACIOS', 'full_name' => 'ANGEL WILFREDO BUSTAMANTE PALACIOS', 'dni' => '13131313', 'email' => 'angel.bustamante@example.com', 'password' => Hash::make('password'), 'role' => ['student'], 'status' => 'active', 'email_verified_at' => now()]),
+            User::create(['first_name' => 'EDWIN FIDENCIO', 'last_name' => 'OSORIO JUAQUIN', 'full_name' => 'EDWIN FIDENCIO OSORIO JUAQUIN', 'dni' => '99999999', 'document' => 'DOC-ADMIN', 'email' => 'edwin@example.com', 'password' => Hash::make('12345678'), 'role' => ['student', 'admin'], 'status' => 'active', 'email_verified_at' => now()]),
+            User::create(['first_name' => 'RODRIGO EMILIO', 'last_name' => 'TREJO OBREGON', 'full_name' => 'RODRIGO EMILIO TREJO OBREGON', 'dni' => '77777777', 'document' => 'DOC-AUDITOR', 'email' => 'auditor2@example.com', 'password' => Hash::make('12345678'), 'role' => ['student', 'auditor'], 'status' => 'active', 'email_verified_at' => now()]),
         ]);
 
         // Listas de estudiantes para grupos

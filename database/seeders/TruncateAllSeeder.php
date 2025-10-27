@@ -25,6 +25,7 @@ class TruncateAllSeeder extends Seeder
         DB::table('class_materials')->truncate();
         DB::table('attendances')->truncate();
         DB::table('grade_records')->truncate();
+        DB::table('survey_questions')->truncate();
         DB::table('vocational_response_courses')->truncate();
         DB::table('student_wellbeing_tutoring_assistances')->truncate();
 

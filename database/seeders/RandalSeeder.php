@@ -15,42 +15,6 @@ class RandalSeeder extends Seeder
      */
     public function run(): void
     {
-        // --- INICIO: BLOQUE DE LIMPIEZA ---
-        $this->command->info('Deshabilitando llaves foráneas...');
-        Schema::disableForeignKeyConstraints();
-
-        $this->command->info('Vaciando tablas (TRUNCATE) específicas de RandalSeeder...');
-
-        // Lista de tablas que ESTE seeder maneja.
-        // Se respeta tu lista de "no tocar" (ej. users, courses, etc. NO están aquí).
-        
-        // Tablas "nietas" (las más dependientes primero)
-        DB::table('vocational_response_courses')->truncate();
-        DB::table('vocational_responses')->truncate();
-        DB::table('vocational_questions')->truncate();
-        DB::table('attention_students_requests')->truncate();
-        DB::table('student_wellbeing_tutoring_assistances')->truncate();
-        DB::table('student_wellbeing_tutorings')->truncate();
-        DB::table('student_wellbeing_extracurricular_activities')->truncate();
-
-        // Tablas "hijas" (dependen de 'users', 'departments', etc.)
-        DB::table('students')->truncate();
-        DB::table('employees')->truncate();
-        DB::table('instructors')->truncate();
-        
-        // Tablas "padre" (de este módulo)
-        DB::table('positions')->truncate();
-        DB::table('departments')->truncate();
-        DB::table('vocational_questionnaires')->truncate();
-        DB::table('attention_students_Request_Types')->truncate();
-        
-        // NOTA: 'users' y 'courses' NO se tocan, tal como pediste.
-
-        $this->command->info('Tablas vaciadas. Reactivando llaves foráneas...');
-        Schema::enableForeignKeyConstraints();
-        // --- FIN: BLOQUE DE LIMPIEZA ---
-
-
         // =========================
         // CONFIGURACIÓN PREVIA
         // =========================
