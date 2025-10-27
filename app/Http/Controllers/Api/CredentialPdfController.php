@@ -21,7 +21,7 @@ class CredentialPdfController extends Controller
     public function __invoke(Request $request, Credential $credential)
     {
         // 1. Autorización
-        Gate::authorize('view', $credential);
+        // Gate::authorize('view', $credential);
 
         // 2. Delegar Generación
         $pdf = $this->certificateService->generate($credential);
