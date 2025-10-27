@@ -897,8 +897,7 @@ class DatabaseSeeder extends Seeder
                     'email' => $user->email,
                     'phone' => null,
                     'status' => 'active',
-                    'created_at' => now(),
-                    'updated_at' => now()
+                    'created_at' => now()
                 ];
                 
                 $counter++;
